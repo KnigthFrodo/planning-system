@@ -54,7 +54,7 @@ Store task IDs for manifest creation.
 
 Create `manifest.jsonl` with one JSON object per line.
 
-Load template from `.claude/skills/planning/templates/manifest.jsonl` for field reference.
+Load template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/manifest.md` for field reference.
 
 Required fields:
 
@@ -75,7 +75,7 @@ Required fields:
 
 For each feature, create `prompts/NN-<slug>.md`.
 
-Load template from `.claude/skills/planning/templates/prompt.md`.
+Load template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/prompt.md`.
 
 Each prompt must include:
 
@@ -129,7 +129,7 @@ Verify all files created:
 If `.devops` file exists and you want DevOps task tracking:
 
 ```bash
-bun run --cwd .claude/skills/planning/verification sync-devops.ts <plan-dir> --create-tasks
+bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification sync-devops.ts <plan-dir> --create-tasks
 ```
 
 This creates DevOps tasks linked to the Story for each feature.

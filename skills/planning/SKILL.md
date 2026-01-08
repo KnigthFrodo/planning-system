@@ -36,7 +36,7 @@ All plans create a Beads epic. Each feature becomes a task under that epic. Stat
 # Epic created by /plan-new
 bd create --type=epic --title="Feature Name" --silent
 
-# Tasks created by /plan-optimize  
+# Tasks created by /plan-optimize
 bd create --type=task --parent=<epic-id> --title="F001: Setup types" --silent
 
 # Status updates by /plan-orchestrate

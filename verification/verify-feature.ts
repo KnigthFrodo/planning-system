@@ -1,23 +1,23 @@
 /**
  * Feature Verification
- * 
+ *
  * Standalone verification for a specific feature.
  * Used by orchestrator to verify before marking complete.
- * 
+ *
  * Usage: bun run verify-feature.ts <feature-id> <plan-dir>
- * 
+ *
  * Exit codes:
  * - 0: All checks pass
  * - 1: Verification failed
  */
 
-import { getFeatureById } from "./lib/manifest.ts";
-import { runCommand } from "./lib/tests.ts";
-import { getRecentCommits } from "./lib/git.ts";
+import { getFeatureById } from "./lib/manifest";
+import { runCommand } from "./lib/tests";
+import { getRecentCommits } from "./lib/git";
 
 async function main(): Promise<void> {
   const [featureId, planDir] = process.argv.slice(2);
-  
+
   if (!featureId || !planDir) {
     console.error("Usage: bun run verify-feature.ts <feature-id> <plan-dir>");
     process.exit(1);
@@ -56,13 +56,13 @@ async function main(): Promise<void> {
   console.log(`\n========================================`);
   console.log(`Feature ${featureId} Verification Results`);
   console.log(`========================================\n`);
-  
-  console.log(`Verification (${feature.verification}): ${results.verification.success ? "✓ PASS" : "✗ FAIL"}`);
-  console.log(`Commit found: ${results.commit.found ? "✓ YES" : "✗ NO"}`);
-  console.log(`Build: ${results.build.success ? "✓ PASS" : "✗ FAIL"}`);
+
+  console.log(`Verification (${feature.verification}): ${results.verification.success ? "PASS" : "FAIL"}`);
+  console.log(`Commit found: ${results.commit.found ? "YES" : "NO"}`);
+  console.log(`Build: ${results.build.success ? "PASS" : "FAIL"}`);
 
   const allPassed = results.verification.success && results.commit.found && results.build.success;
-  
+
   if (!allPassed) {
     console.log("\n--- Failure Details ---\n");
     if (!results.verification.success) {
@@ -78,7 +78,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  console.log("\n✓ All checks passed\n");
+  console.log("\nAll checks passed\n");
   process.exit(0);
 }
 

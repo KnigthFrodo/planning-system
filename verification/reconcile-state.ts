@@ -1,15 +1,15 @@
 /**
  * State Reconciliation and Recovery
- * 
+ *
  * Ensures idempotent orchestration by synchronizing:
- * - Beads task status ↔ manifest.jsonl status
+ * - Beads task status <-> manifest.jsonl status
  * - Recovering from mid-feature crashes
  * - Detecting and reporting manifest corruption
- * 
+ *
  * Run at orchestration start before any feature processing.
- * 
+ *
  * Usage: bun run reconcile-state.ts <plan-dir>
- * 
+ *
  * Exit codes:
  * - 0: Reconciliation complete, safe to proceed
  * - 1: Unrecoverable error (manifest corrupt, beads unavailable)
@@ -139,9 +139,9 @@ async function reconcile(planDir: string): Promise<void> {
   console.log("Syncing Beads...");
   try {
     await $`bd sync`.quiet();
-    console.log("  ✓ Beads synced\n");
+    console.log("  Beads synced\n");
   } catch (err) {
-    console.error("  ✗ Beads sync failed - is .beads/ initialized?");
+    console.error("  Beads sync failed - is .beads/ initialized?");
     process.exit(1);
   }
 
@@ -149,10 +149,10 @@ async function reconcile(planDir: string): Promise<void> {
   console.log("Reading manifest...");
   const entries = readManifest(planDir);
   if (!entries) {
-    console.error("  ✗ Cannot read manifest.jsonl");
+    console.error("  Cannot read manifest.jsonl");
     process.exit(1);
   }
-  console.log(`  ✓ Found ${entries.length} features\n`);
+  console.log(`  Found ${entries.length} features\n`);
 
   // Step 3: Validate manifest structure
   console.log("Validating manifest structure...");
@@ -163,22 +163,22 @@ async function reconcile(planDir: string): Promise<void> {
   }
 
   if (allErrors.length > 0) {
-    console.error("  ✗ Manifest validation errors:");
+    console.error("  Manifest validation errors:");
     for (const err of allErrors) {
       console.error(`    - ${err}`);
     }
     process.exit(1);
   }
-  console.log("  ✓ Manifest structure valid\n");
+  console.log("  Manifest structure valid\n");
 
   // Step 4: Check git state
   console.log("Checking git state...");
   const gitState = await checkGitState();
   console.log(`  Branch: ${gitState.branch}`);
   if (gitState.uncommitted.length > 0) {
-    console.log(`  ⚠ Uncommitted changes: ${gitState.uncommitted.length} files`);
+    console.log(`  Warning: Uncommitted changes: ${gitState.uncommitted.length} files`);
   } else {
-    console.log("  ✓ Working directory clean");
+    console.log("  Working directory clean");
   }
   console.log();
 
@@ -191,7 +191,7 @@ async function reconcile(planDir: string): Promise<void> {
     const beadsStatus = await getBeadsStatus(entry.beads_id);
 
     if (!beadsStatus) {
-      console.log(`  ${entry.id}: ⚠ Beads task ${entry.beads_id} not found`);
+      console.log(`  ${entry.id}: Warning - Beads task ${entry.beads_id} not found`);
       continue;
     }
 
@@ -199,7 +199,7 @@ async function reconcile(planDir: string): Promise<void> {
 
     // Case 1: Beads closed, manifest not completed
     if (beadsStatus === "closed" && manifestStatus !== "completed") {
-      console.log(`  ${entry.id}: Beads closed → manifest completed`);
+      console.log(`  ${entry.id}: Beads closed -> manifest completed`);
       entry.status = "completed";
       modified = true;
       results.push({
@@ -213,7 +213,7 @@ async function reconcile(planDir: string): Promise<void> {
 
     // Case 2: Manifest completed, beads not closed
     else if (manifestStatus === "completed" && beadsStatus !== "closed") {
-      console.log(`  ${entry.id}: Manifest completed → closing Beads`);
+      console.log(`  ${entry.id}: Manifest completed -> closing Beads`);
       await closeBeadsTask(entry.beads_id, "Reconciliation: manifest shows completed");
       results.push({
         action: "close_beads",
@@ -254,12 +254,12 @@ async function reconcile(planDir: string): Promise<void> {
     // Case 5: Both in_progress (crash mid-feature)
     else if (manifestStatus === "in_progress" && beadsStatus === "in_progress") {
       console.log(`  ${entry.id}: Mid-feature crash detected`);
-      
+
       // Check if the work was actually completed
       const verificationPasses = await checkVerificationPasses(entry.verification);
-      
+
       if (verificationPasses && gitState.uncommitted.length === 0) {
-        console.log(`    → Verification passes, marking completed`);
+        console.log(`    -> Verification passes, marking completed`);
         entry.status = "completed";
         modified = true;
         await closeBeadsTask(entry.beads_id, "Reconciliation: verification passed after crash");
@@ -271,7 +271,7 @@ async function reconcile(planDir: string): Promise<void> {
           reason: "Verification passes, work was complete"
         });
       } else {
-        console.log(`    → Verification fails or uncommitted changes, resetting to pending`);
+        console.log(`    -> Verification fails or uncommitted changes, resetting to pending`);
         entry.status = "pending";
         modified = true;
         await updateBeadsStatus(entry.beads_id, "open");
@@ -302,7 +302,7 @@ async function reconcile(planDir: string): Promise<void> {
 
     // Case 7: States match
     else {
-      console.log(`  ${entry.id}: ✓ States consistent (${manifestStatus})`);
+      console.log(`  ${entry.id}: States consistent (${manifestStatus})`);
     }
   }
 
@@ -310,7 +310,7 @@ async function reconcile(planDir: string): Promise<void> {
   if (modified) {
     console.log("\nWriting updated manifest...");
     writeManifest(planDir, entries);
-    console.log("  ✓ Manifest updated");
+    console.log("  Manifest updated");
   }
 
   // Step 7: Summary
@@ -340,12 +340,12 @@ async function reconcile(planDir: string): Promise<void> {
 
   // Check if any features are stuck in_progress after reconciliation
   if (stats.in_progress > 0) {
-    console.error("⚠ Warning: Features still in_progress after reconciliation");
+    console.error("Warning: Features still in_progress after reconciliation");
     console.error("  This shouldn't happen - manual intervention may be required");
     process.exit(2);
   }
 
-  console.log("✓ Reconciliation complete - safe to proceed\n");
+  console.log("Reconciliation complete - safe to proceed\n");
 }
 
 // Main

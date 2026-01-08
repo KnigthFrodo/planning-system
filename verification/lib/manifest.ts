@@ -22,7 +22,7 @@ export function readManifest(planDir: string): ManifestEntry[] {
   if (!existsSync(manifestPath)) {
     return [];
   }
-  
+
   const content = readFileSync(manifestPath, "utf-8");
   return content
     .trim()

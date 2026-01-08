@@ -1,16 +1,16 @@
 /**
  * Azure DevOps Boards Sync
- * 
+ *
  * Syncs meaningful planning information to Azure DevOps for
  * stakeholder visibility. Beads remains source of truth.
- * 
+ *
  * Usage: bun run sync-devops.ts <plan-dir> [--full|--status|--create-tasks]
- * 
+ *
  * Modes:
  * - --full: Full sync (title, description, status for all items)
  * - --status: Status-only sync (faster, just updates states)
  * - --create-tasks: Create DevOps tasks for features that don't have devops_id
- * 
+ *
  * Exit codes:
  * - 0: Sync successful
  * - 1: Error (missing config, auth failure)
@@ -148,9 +148,9 @@ function buildStoryDescription(summary: string, entries: ManifestEntry[]): strin
 
   description += `<h2>Features</h2>\n<ul>\n`;
   for (const entry of entries) {
-    const icon = entry.status === "completed" ? "✓" : 
-                 entry.status === "in_progress" ? "▶" :
-                 entry.status === "failed" ? "✗" : "○";
+    const icon = entry.status === "completed" ? "[x]" :
+                 entry.status === "in_progress" ? "[>]" :
+                 entry.status === "failed" ? "[!]" : "[ ]";
     description += `<li>${icon} <strong>${entry.id}:</strong> ${entry.title}</li>\n`;
   }
   description += `</ul>\n`;
@@ -251,10 +251,10 @@ async function main(): Promise<void> {
         entry.devops_id = result.id;
         modified = true;
         created++;
-        console.log(`    ✓ Created task ${result.id}`);
+        console.log(`    Created task ${result.id}`);
       } else {
         failed++;
-        console.log(`    ✗ Failed: ${result.error}`);
+        console.log(`    Failed: ${result.error}`);
       }
     }
 
@@ -276,9 +276,9 @@ async function main(): Promise<void> {
     }, config);
 
     if (storyResult.success) {
-      console.log("  ✓ Story updated");
+      console.log("  Story updated");
     } else {
-      console.log(`  ✗ Story update failed: ${storyResult.error}`);
+      console.log(`  Story update failed: ${storyResult.error}`);
       hasFailures = true;
     }
 
@@ -297,9 +297,9 @@ async function main(): Promise<void> {
       }, config);
 
       if (result.success) {
-        console.log(`  ${entry.id}: ✓`);
+        console.log(`  ${entry.id}: OK`);
       } else {
-        console.log(`  ${entry.id}: ✗ ${result.error}`);
+        console.log(`  ${entry.id}: FAILED ${result.error}`);
         hasFailures = true;
       }
     }
@@ -312,7 +312,7 @@ async function main(): Promise<void> {
       "System.Title": title,
       "System.Description": storyDesc
     }, config);
-    console.log("  ✓ Story updated");
+    console.log("  Story updated");
 
     console.log("\nSyncing feature statuses...");
     for (const entry of entries) {
@@ -326,9 +326,9 @@ async function main(): Promise<void> {
       }, config);
 
       if (result.success) {
-        console.log(`  ${entry.id}: ✓ ${mapStatusToDevOps(entry.status)}`);
+        console.log(`  ${entry.id}: OK ${mapStatusToDevOps(entry.status)}`);
       } else {
-        console.log(`  ${entry.id}: ✗ ${result.error}`);
+        console.log(`  ${entry.id}: FAILED ${result.error}`);
         hasFailures = true;
       }
     }
@@ -336,7 +336,7 @@ async function main(): Promise<void> {
 
   console.log("\n=== Sync Complete ===");
   if (hasFailures) {
-    console.log("\n⚠ Some items failed to sync");
+    console.log("\nWarning: Some items failed to sync");
     process.exit(2);
   }
 }

@@ -8,19 +8,19 @@ Enter planning mode to collaboratively design a new feature.
 
 ## Before Starting
 
-Read `.claude/skills/planning/SKILL.md` for system overview.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 
 ## Workflow
 
 1. **Enter planning mode** using EnterPlanMode tool
 
-2. **Load workflow details**: Read `.claude/skills/planning/workflows/1-planning.md`
+2. **Load workflow details**: Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/workflows/1-planning.md`
 
 3. **Follow the workflow** - gather requirements, design approach, resolve questions
 
-4. **Write the plan** to `dev/plans/<title>/plan.md` using template from `.claude/skills/planning/templates/plan.md`
+4. **Write the plan** to `dev/plans/<title>/plan.md` using template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/plan.md`
 
-5. **Create Beads epic**: 
+5. **Create Beads epic**:
    ```bash
    bd create --type=epic --title="<title>" --description="<summary>" --silent > dev/plans/<title>/.beads
    ```

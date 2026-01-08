@@ -9,7 +9,7 @@ Transform a plan into feature prompts optimized for sub-agent execution.
 
 ## Before Starting
 
-Read `.claude/skills/planning/SKILL.md` for system overview.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 
 ## Input
 
@@ -20,7 +20,7 @@ Read `.claude/skills/planning/SKILL.md` for system overview.
 
 1. **Validate input**: Confirm plan file exists, read `.beads` file for epic ID
 
-2. **Load workflow details**: Read `.claude/skills/planning/workflows/2-optimization.md`
+2. **Load workflow details**: Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/workflows/2-optimization.md`
 
 3. **Follow the workflow**:
    - Decompose plan into features

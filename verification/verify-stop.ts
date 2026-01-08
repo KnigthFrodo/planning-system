@@ -1,17 +1,17 @@
 /**
  * Stop Hook Verification
- * 
+ *
  * Runs when Claude attempts to stop responding during orchestration.
  * Blocks completion if quality gates not met.
- * 
+ *
  * Exit codes:
  * - 0: Allow stop
  * - 2: Block stop (stderr fed back to Claude)
  */
 
-import { checkUncommittedChanges, getRecentCommits } from "./lib/git.ts";
-import { runCommand } from "./lib/tests.ts";
-import { getCurrentFeature } from "./lib/manifest.ts";
+import { checkUncommittedChanges, getRecentCommits } from "./lib/git";
+import { runCommand } from "./lib/tests";
+import { getCurrentFeature } from "./lib/manifest";
 
 const PLAN_DIR = process.env.PLAN_DIR || ".";
 

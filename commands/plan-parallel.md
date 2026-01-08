@@ -9,7 +9,7 @@ Execute multiple plans in parallel using git worktrees.
 
 ## Before Starting
 
-Read `.claude/skills/planning/SKILL.md` for system overview.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 
 ## Input
 
@@ -19,16 +19,16 @@ Read `.claude/skills/planning/SKILL.md` for system overview.
 
 1. **Validate inputs**: Confirm all plan directories exist with manifest.jsonl
 
-2. **Load workflow details**: Read `.claude/skills/planning/workflows/4-parallel.md`
+2. **Load workflow details**: Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/workflows/4-parallel.md`
 
 3. **Determine merge order**: Analyze dependencies, prioritize by Beads priority
 
 4. **Create worktrees**: One per plan, branching from main
 
-5. **Display execution instructions**: 
+5. **Display execution instructions**:
    ```
    Open separate Claude Code sessions:
-   
+
    Session 1: cd <worktree-1> && /plan-orchestrate .
    Session 2: cd <worktree-2> && /plan-orchestrate .
    ```

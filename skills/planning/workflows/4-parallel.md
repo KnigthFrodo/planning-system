@@ -142,8 +142,8 @@ git worktree prune
 Parallel Execution Complete
 
 Merged:
-✓ plan-a (3 features)
-✓ plan-b (5 features)
+* plan-a (3 features)
+* plan-b (5 features)
 
 Worktrees cleaned: 2
 Branches removed: 2

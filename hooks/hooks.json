@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run --cwd .claude/skills/planning/verification verify-stop.ts"
+            "command": "bun run ${CLAUDE_PLUGIN_ROOT}/verification/verify-stop.ts"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run --cwd .claude/skills/planning/verification verify-subagent.ts"
+            "command": "bun run ${CLAUDE_PLUGIN_ROOT}/verification/verify-subagent.ts"
           }
         ]
       }

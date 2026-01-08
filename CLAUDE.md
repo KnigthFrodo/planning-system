@@ -18,22 +18,22 @@ This is a planning and execution system for Claude Code that uses mechanical enf
 ## Setup
 
 ```bash
-cd .claude/skills/planning/verification
+cd verification
 bun install
 ```
 
 ## Architecture
 
 ```
-/plan-new ──► plan.md ──► /plan-optimize ──► manifest.jsonl + prompts/ ──► /plan-orchestrate ──► PR
-                              │                                                    │
-                              ▼                                                    ▼
+/plan-new --> plan.md --> /plan-optimize --> manifest.jsonl + prompts/ --> /plan-orchestrate --> PR
+                              |                                                    |
+                              v                                                    v
                          Beads Epic                                          Beads Tasks
 ```
 
 ### Mechanical Enforcement
 
-Hooks in `.claude/hooks.json` intercept Stop and SubagentStop events. TypeScript verification scripts in `.claude/skills/planning/verification/` check actual state (tests pass, build succeeds, changes committed). Exit code 2 blocks completion and feeds stderr back to Claude.
+Hooks in `hooks/hooks.json` intercept Stop and SubagentStop events. TypeScript verification scripts in `verification/` check actual state (tests pass, build succeeds, changes committed). Exit code 2 blocks completion and feeds stderr back to Claude.
 
 ### Key Files
 

@@ -1,84 +1,202 @@
 # Claude Code Planning System
 
-A reliable planning and execution system for Claude Code that emphasizes mechanical enforcement over instruction compliance.
+A plugin for Claude Code that ensures sub-agents actually complete their work through mechanical enforcement.
 
-## Problem Solved
+## The Problem
 
-Claude Code sub-agents sometimes skip steps (tests, builds, commits) with responses like "I decided that was a lot of work." This system uses hooks and verification scripts to mechanically block shortcuts.
+When Claude Code spawns sub-agents to implement features, they sometimes take shortcuts:
+- "I decided the tests weren't necessary"
+- "The build step seemed redundant"
+- "I'll let you handle the commit"
 
-## Quick Start
+These shortcuts lead to incomplete work, failed builds, and frustrated developers.
 
-1. Copy the `.claude/` directory to your project root
-2. Install verification dependencies:
-   ```bash
-   cd .claude/skills/planning/verification
-   bun install
-   ```
-3. Initialize Beads in your project (required)
-4. Start planning: `/plan-new`
+## The Solution
 
-## Commands
+This plugin uses **hooks** to mechanically verify work before allowing completion. Sub-agents cannot claim "done" until:
+- Tests actually pass
+- Build actually succeeds
+- Changes are actually committed
 
-| Command | Purpose |
-|---------|---------|
-| `/plan-new` | Enter planning mode, create plan document |
-| `/plan-optimize <plan.md>` | Decompose plan into feature prompts |
-| `/plan-orchestrate <plan-dir>` | Execute features with sub-agents |
-| `/plan-parallel <dir1> <dir2>` | Execute multiple plans in parallel |
+No more trusting claims - only verified results.
 
-## Architecture
+## Installation
 
-```
-/plan-new ──► plan.md ──► /plan-optimize ──► manifest + prompts ──► /plan-orchestrate ──► PR
-                              │                                              │
-                              ▼                                              ▼
-                         Beads Epic                                    Beads Tasks
-```
+### Prerequisites
 
-## Key Features
+Before installing, ensure you have:
 
-- **Mechanical Enforcement**: Hooks block completion if quality gates not met
-- **Sub-Agent Verification**: Claims are verified before acceptance
-- **Crash Recovery**: Safe to re-run orchestration at any point
-- **Dual-Repo Support**: GitHub and Azure DevOps PR creation
-- **DevOps Sync**: Rich information to Azure DevOps boards
-- **Beads Integration**: Epic/task state management
+| Tool | Purpose | Install |
+|------|---------|---------|
+| [Bun](https://bun.sh) | Runs verification scripts | `curl -fsSL https://bun.sh/install \| bash` |
+| [Beads CLI](https://github.com/bpowers/beads) | Tracks epics/tasks | `cargo install beads` |
+| Git | Version control | [git-scm.com](https://git-scm.com) |
+| GitHub CLI | PR creation | `brew install gh` or [cli.github.com](https://cli.github.com) |
 
-## Directory Structure
+### Install the Plugin
 
-```
-.claude/
-├── commands/           # Slash commands (~50 lines each)
-├── hooks.json          # Stop/SubagentStop hook config
-└── skills/planning/
-    ├── SKILL.md        # System overview
-    ├── workflows/      # Detailed phase instructions
-    ├── templates/      # File format templates
-    ├── verification/   # TypeScript enforcement scripts
-    └── reference/      # Quick reference guides
+```bash
+claude plugin install planning-system
 ```
 
-## Requirements
+### Setup in Your Project
 
-- Bun runtime
-- Git
-- Beads CLI (`bd`)
-- GitHub CLI (`gh`) or Azure CLI (`az`) for PR creation
+```bash
+cd your-project
+bd init  # Initialize Beads for task tracking
+```
 
-## Configuration Files
+## Usage
+
+### The Workflow
+
+```
+/plan-new        Create a plan document collaboratively
+     │
+     ▼
+/plan-optimize   Break the plan into executable features
+     │
+     ▼
+/plan-orchestrate   Execute features with verified sub-agents
+     │
+     ▼
+   Pull Request   Ready for review
+```
+
+### Step 1: Plan Your Feature
+
+```
+/plan-new
+```
+
+Enter planning mode to collaboratively design your feature. Claude will:
+- Ask clarifying questions
+- Help you think through edge cases
+- Create a structured plan document at `dev/plans/<feature>/plan.md`
+- Create a Beads epic to track the work
+
+### Step 2: Optimize for Execution
+
+```
+/plan-optimize dev/plans/my-feature/plan.md
+```
+
+Transform your plan into sub-agent-ready prompts:
+- Decomposes the plan into sequential features
+- Creates individual prompt files for each feature
+- Generates a manifest tracking dependencies and status
+- Creates Beads tasks linked to the epic
+
+**Output structure:**
+```
+dev/plans/my-feature/
+├── plan.md              # Your original plan
+├── manifest.jsonl       # Feature tracking
+├── context.md           # Shared context for sub-agents
+├── constraints.md       # Rules all features must follow
+└── prompts/
+    ├── 01-setup.md      # Feature 1 prompt
+    ├── 02-core.md       # Feature 2 prompt
+    └── 03-tests.md      # Feature 3 prompt
+```
+
+### Step 3: Execute with Verification
+
+```
+/plan-orchestrate dev/plans/my-feature/
+```
+
+Execute each feature sequentially with mechanical verification:
+
+1. **Spawns sub-agent** with feature prompt
+2. **Waits for completion** claim
+3. **Mechanically verifies**:
+   - Verification command passes
+   - Tests pass (`bun test`)
+   - Build succeeds (`bun run build`)
+   - Changes committed with feature ID
+4. **Blocks or proceeds** based on actual results
+5. **Creates PR** when all features complete
+
+### Parallel Execution (Advanced)
+
+For independent plans that can run simultaneously:
+
+```
+/plan-parallel dev/plans/feature-a dev/plans/feature-b
+```
+
+Uses git worktrees to execute multiple plans in parallel sessions.
+
+## How Verification Works
+
+### Hooks
+
+The plugin registers hooks for `Stop` and `SubagentStop` events:
+
+```json
+{
+  "hooks": {
+    "Stop": [{ "command": "bun run verification/verify-stop.ts" }],
+    "SubagentStop": [{ "command": "bun run verification/verify-subagent.ts" }]
+  }
+}
+```
+
+### Quality Gates
+
+Before a feature is marked complete, ALL must pass:
+
+| Gate | Check |
+|------|-------|
+| Verification command | Feature-specific check exits 0 |
+| Tests | `bun test` passes |
+| Build | `bun run build` succeeds |
+| Commit | Changes committed with feature ID |
+| Clean | No uncommitted changes |
+
+### Exit Codes
+
+| Code | Meaning | Result |
+|------|---------|--------|
+| 0 | All gates pass | Completion allowed |
+| 1 | Error occurred | Error reported |
+| 2 | Gate failed | **Blocked** - must fix and retry |
+
+## Configuration
+
+### Project Files
+
+These files are created in your project during planning:
 
 | File | Purpose |
 |------|---------|
-| `.beads` | Beads epic ID (created by /plan-new) |
-| `.devops` | Azure DevOps Story config (optional) |
-| `.planconfig` | PR creation overrides (optional) |
+| `dev/plans/<name>/.beads` | Beads epic ID |
+| `dev/plans/<name>/.devops` | Azure DevOps Story ID (optional) |
+| `dev/plans/<name>/.planconfig` | PR creation overrides (optional) |
 
-## How It Works
+### Azure DevOps Integration
 
-1. **Hooks** intercept Stop and SubagentStop events
-2. **Verification scripts** check actual state (tests, commits, builds)
-3. **Exit code 2** blocks completion and feeds stderr back to Claude
-4. **State reconciliation** ensures idempotent orchestration
+To sync with Azure DevOps boards, create `.devops`:
+
+```
+STORY_ID=12345
+ORG=myorg
+PROJECT=MyProject
+```
+
+## Crash Recovery
+
+The system is fully idempotent. If interrupted:
+
+```bash
+/plan-orchestrate dev/plans/my-feature/  # Just re-run
+```
+
+State reconciliation will:
+- Skip completed features
+- Reset interrupted features
+- Continue from where it left off
 
 ## License
 

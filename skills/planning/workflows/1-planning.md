@@ -45,7 +45,7 @@ Create directory and plan file:
 dev/plans/<title>/plan.md
 ```
 
-Load template from `.claude/skills/planning/templates/plan.md` and fill in:
+Load template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/plan.md` and fill in:
 
 - Summary of the feature
 - Requirements from discussion

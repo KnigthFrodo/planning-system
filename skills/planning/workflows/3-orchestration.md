@@ -16,7 +16,7 @@ git checkout -b plan/$PLAN_NAME 2>/dev/null || git checkout plan/$PLAN_NAME
 **Run BEFORE any feature processing. This ensures idempotency.**
 
 ```bash
-bun run --cwd .claude/skills/planning/verification reconcile-state.ts $ARGUMENTS
+bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification reconcile-state.ts $ARGUMENTS
 ```
 
 This script:
@@ -59,7 +59,7 @@ Read these files from plan directory:
 If `.devops` file exists:
 
 ```bash
-bun run --cwd .claude/skills/planning/verification sync-devops.ts $ARGUMENTS --status
+bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification sync-devops.ts $ARGUMENTS --status
 ```
 
 This updates the Story with current progress and syncs feature statuses.
@@ -141,7 +141,7 @@ Do NOT fix issues - only report findings.
 In addition to sub-agent verification, run the verification script:
 
 ```bash
-bun run --cwd .claude/skills/planning/verification verify-feature.ts $FEATURE_ID $ARGUMENTS
+bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification verify-feature.ts $FEATURE_ID $ARGUMENTS
 ```
 
 This provides mechanical verification independent of sub-agent claims.
@@ -174,7 +174,7 @@ Report failure to user with specific findings. Ask: "Fix and retry, skip, or abo
 After each feature completion:
 
 ```bash
-bun run --cwd .claude/skills/planning/verification sync-devops.ts $ARGUMENTS --status
+bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification sync-devops.ts $ARGUMENTS --status
 ```
 
 ## Step 6: Final Validation
@@ -191,7 +191,7 @@ After all features complete:
 Full sync with completion details:
 
 ```bash
-bun run --cwd .claude/skills/planning/verification sync-devops.ts $ARGUMENTS --full
+bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification sync-devops.ts $ARGUMENTS --full
 ```
 
 ## Step 8: Create Pull Request
@@ -199,7 +199,7 @@ bun run --cwd .claude/skills/planning/verification sync-devops.ts $ARGUMENTS --f
 Use the dual-repo PR script:
 
 ```bash
-bun run --cwd .claude/skills/planning/verification create-pr.ts $ARGUMENTS plan/$PLAN_NAME
+bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification create-pr.ts $ARGUMENTS plan/$PLAN_NAME
 ```
 
 This script:
@@ -236,7 +236,7 @@ az boards work-item update $STORY_ID \
 
 ```
 ---
-## 🎯 Orchestration State
+## Orchestration State
 | Metric | Value |
 |--------|-------|
 | Current Feature | $FEATURE_ID - $STATUS |

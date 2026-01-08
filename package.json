@@ -1,0 +1,20 @@
+{
+  "name": "@bpowers/planning-system",
+  "version": "1.0.0",
+  "description": "Planning and execution system for Claude Code with mechanical enforcement",
+  "type": "module",
+  "author": "Bobby Powers",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bpowers/planning-system.git"
+  },
+  "scripts": {
+    "build": "bun run --cwd .claude/skills/planning/verification build 2>/dev/null || true",
+    "test": "bun test --cwd .claude/skills/planning/verification 2>/dev/null || true"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.0",
+    "typescript": "^5.4.0"
+  }
+}

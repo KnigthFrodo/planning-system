@@ -1,15 +1,15 @@
 /**
  * Pull Request Creation - Dual Repo Support
- * 
+ *
  * Detects whether the project uses GitHub or Azure DevOps repos
  * and creates PR using the appropriate CLI.
- * 
+ *
  * Detection order:
  * 1. .planconfig file (explicit override)
  * 2. Git remote URL pattern matching
- * 
+ *
  * Usage: bun run create-pr.ts <plan-dir> <branch-name>
- * 
+ *
  * Exit codes:
  * - 0: PR created successfully
  * - 1: Error (missing CLI, auth failure, etc.)
@@ -241,9 +241,9 @@ ${summary}
   }
 
   if (result.success) {
-    console.log(`\n✓ PR created: ${result.url}`);
+    console.log(`\nPR created: ${result.url}`);
   } else {
-    console.error(`\n✗ PR creation failed: ${result.error}`);
+    console.error(`\nPR creation failed: ${result.error}`);
     process.exit(1);
   }
 }

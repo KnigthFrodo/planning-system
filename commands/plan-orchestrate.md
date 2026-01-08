@@ -9,7 +9,7 @@ Execute features sequentially using sub-agents with verification.
 
 ## Before Starting
 
-Read `.claude/skills/planning/SKILL.md` for system overview.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 
 ## Input
 
@@ -21,7 +21,7 @@ Read `.claude/skills/planning/SKILL.md` for system overview.
 
 2. **State reconciliation**: Run recovery script
    ```bash
-   bun run --cwd .claude/skills/planning/verification reconcile-state.ts $ARGUMENTS
+   bun run ${CLAUDE_PLUGIN_ROOT}/verification/reconcile-state.ts $ARGUMENTS
    ```
 
 3. **Load context files**: Read manifest.jsonl, context.md, constraints.md from plan directory
@@ -29,33 +29,33 @@ Read `.claude/skills/planning/SKILL.md` for system overview.
 4. **Execute features sequentially**:
 
    For each pending feature:
-   
+
    a. Update status to `in_progress` in manifest and Beads
-   
+
    b. Spawn sub-agent with:
       - Feature prompt content
       - Context from constraints.md
-      - Verification requirements from `.claude/skills/planning/reference/quality-gates.md`
-   
+      - Verification requirements from `${CLAUDE_PLUGIN_ROOT}/skills/planning/reference/quality-gates.md`
+
    c. **Wait for sub-agent completion**
-   
+
    d. **Verification sub-agent**: Spawn verification agent to audit the work
       - Prompt: "Verify feature <ID> implementation against requirements"
       - Must confirm: tests pass, build succeeds, changes committed
-   
+
    e. **Mechanical verification**: Run verify-feature.ts script
-   
+
    f. If verified: Mark `completed` in manifest, close Beads task
-   
+
    g. If failed: Mark `failed`, report to user, ask how to proceed
-   
+
    h. Sync DevOps status (if configured)
 
 5. **Final validation**: Run full test suite, sync DevOps
 
 6. **Create PR**: Uses dual-repo support (GitHub or Azure DevOps)
    ```bash
-   bun run --cwd .claude/skills/planning/verification create-pr.ts $ARGUMENTS plan/<plan-name>
+   bun run ${CLAUDE_PLUGIN_ROOT}/verification/create-pr.ts $ARGUMENTS plan/<plan-name>
    ```
 
 ## State Output (every response)

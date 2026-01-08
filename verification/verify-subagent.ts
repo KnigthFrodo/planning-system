@@ -1,15 +1,15 @@
 /**
  * SubagentStop Hook Verification
- * 
+ *
  * Runs when a sub-agent completes. Validates claimed work before accepting.
- * 
+ *
  * Exit codes:
  * - 0: Accept sub-agent completion
  * - 2: Reject (stderr fed back to orchestrator)
  */
 
-import { checkUncommittedChanges, getRecentCommits, getDiff } from "./lib/git.ts";
-import { runCommand } from "./lib/tests.ts";
+import { checkUncommittedChanges, getRecentCommits, getDiff } from "./lib/git";
+import { runCommand } from "./lib/tests";
 
 async function main(): Promise<void> {
   const errors: string[] = [];
