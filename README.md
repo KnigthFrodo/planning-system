@@ -12,6 +12,8 @@ No more sub-agents claiming "done" when tests don't pass or code isn't committed
 
 **Prerequisites:** [Bun](https://bun.sh), [Beads](https://github.com/bpowers/beads), Git, GitHub CLI
 
+**Optional:** [Perles](https://github.com/bpowers/perles) - Visual tracking UI for Beads
+
 ```bash
 claude plugin marketplace add NotMyself/claude-dotnet-marketplace
 claude plugin install planning-system
