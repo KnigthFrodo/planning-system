@@ -123,6 +123,7 @@ jobs:
           cd marketplace
 
           MARKETPLACE_FILE=".claude-plugin/marketplace.json"
+          README_FILE="README.md"
           VERSION="${{ steps.version.outputs.version }}"
 
           if [ -f "$MARKETPLACE_FILE" ]; then
@@ -138,6 +139,14 @@ jobs:
           else
             echo "Warning: $MARKETPLACE_FILE not found in marketplace repository"
             exit 1
+          fi
+
+          # Update version in README.md for planning-system section
+          if [ -f "$README_FILE" ]; then
+            # Find the planning-system section and update its version
+            sed -i '/^### planning-system/,/^---$/ s/\*\*Version:\*\* [0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*/**Version:** '"$VERSION"'/' "$README_FILE"
+            echo "Updated planning-system version in $README_FILE"
+            grep -A 30 "^### planning-system" "$README_FILE" | grep "Version:"
           fi
         # EC03: If update fails, release still succeeds
         continue-on-error: true
