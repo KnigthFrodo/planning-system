@@ -122,22 +122,21 @@ jobs:
         run: |
           cd marketplace
 
-          PLUGIN_FILE="plugins/planning-system.json"
+          MARKETPLACE_FILE=".claude-plugin/marketplace.json"
           VERSION="${{ steps.version.outputs.version }}"
 
-          if [ -f "$PLUGIN_FILE" ]; then
-            # Update version in plugin.json using jq if available, otherwise use sed
-            if command -v jq &> /dev/null; then
-              jq --arg version "$VERSION" '.version = $version' "$PLUGIN_FILE" > tmp.json && mv tmp.json "$PLUGIN_FILE"
-            else
-              # Fallback to sed for simple version replacement
-              sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" "$PLUGIN_FILE"
-            fi
+          if [ -f "$MARKETPLACE_FILE" ]; then
+            # Update version for planning-system in the plugins array
+            jq --arg version "$VERSION" '
+              .plugins |= map(
+                if .name == "planning-system" then .version = $version else . end
+              )
+            ' "$MARKETPLACE_FILE" > tmp.json && mv tmp.json "$MARKETPLACE_FILE"
 
-            echo "Updated $PLUGIN_FILE to version $VERSION"
-            cat "$PLUGIN_FILE"
+            echo "Updated planning-system to version $VERSION in $MARKETPLACE_FILE"
+            jq '.plugins[] | select(.name == "planning-system")' "$MARKETPLACE_FILE"
           else
-            echo "Warning: $PLUGIN_FILE not found in marketplace repository"
+            echo "Warning: $MARKETPLACE_FILE not found in marketplace repository"
             exit 1
           fi
         # EC03: If update fails, release still succeeds
