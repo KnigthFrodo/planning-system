@@ -6,16 +6,36 @@ A reliable planning and execution system for Claude Code that emphasizes mechani
 
 Claude Code sub-agents sometimes skip steps (tests, builds, commits) with responses like "I decided that was a lot of work." This system uses hooks and verification scripts to mechanically block shortcuts.
 
+## Installation
+
+### As Plugin (Recommended)
+
+```bash
+claude plugin install github.com/bpowers/planning-system
+```
+
+### For Development
+
+```bash
+git clone https://github.com/bpowers/planning-system
+cd planning-system
+claude plugin install .
+```
+
+## Prerequisites
+
+- [Bun](https://bun.sh) - JavaScript runtime for verification scripts
+- [Beads CLI](https://github.com/beads/beads) (`bd`) - State management for epics/tasks
+- [Git](https://git-scm.com) - Version control
+- [GitHub CLI](https://cli.github.com) (`gh`) or [Azure CLI](https://docs.microsoft.com/cli/azure/) (`az`) - For PR creation
+
 ## Quick Start
 
-1. Copy the `.claude/` directory to your project root
-2. Install verification dependencies:
-   ```bash
-   cd .claude/skills/planning/verification
-   bun install
-   ```
-3. Initialize Beads in your project (required)
-4. Start planning: `/plan-new`
+1. Install the plugin (see Installation above)
+2. Initialize Beads in your project: `bd init`
+3. Run `/plan-new` to start planning a feature
+4. Run `/plan-optimize <plan.md>` to decompose into features
+5. Run `/plan-orchestrate <plan-dir>` to execute with sub-agents
 
 ## Commands
 
@@ -29,9 +49,9 @@ Claude Code sub-agents sometimes skip steps (tests, builds, commits) with respon
 ## Architecture
 
 ```
-/plan-new ──► plan.md ──► /plan-optimize ──► manifest + prompts ──► /plan-orchestrate ──► PR
-                              │                                              │
-                              ▼                                              ▼
+/plan-new --> plan.md --> /plan-optimize --> manifest + prompts --> /plan-orchestrate --> PR
+                              |                                              |
+                              v                                              v
                          Beads Epic                                    Beads Tasks
 ```
 
@@ -44,26 +64,19 @@ Claude Code sub-agents sometimes skip steps (tests, builds, commits) with respon
 - **DevOps Sync**: Rich information to Azure DevOps boards
 - **Beads Integration**: Epic/task state management
 
-## Directory Structure
+## Plugin Structure
 
 ```
-.claude/
-├── commands/           # Slash commands (~50 lines each)
-├── hooks.json          # Stop/SubagentStop hook config
-└── skills/planning/
-    ├── SKILL.md        # System overview
-    ├── workflows/      # Detailed phase instructions
-    ├── templates/      # File format templates
-    ├── verification/   # TypeScript enforcement scripts
-    └── reference/      # Quick reference guides
+planning-system/
+├── .claude-plugin/
+│   └── plugin.json      # Plugin manifest
+├── commands/            # Slash commands
+├── hooks/
+│   └── hooks.json       # Hook configuration
+├── skills/planning/     # Skill definition and workflows
+├── verification/        # TypeScript enforcement scripts
+└── package.json         # NPM package
 ```
-
-## Requirements
-
-- Bun runtime
-- Git
-- Beads CLI (`bd`)
-- GitHub CLI (`gh`) or Azure CLI (`az`) for PR creation
 
 ## Configuration Files
 
