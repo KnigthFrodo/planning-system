@@ -6,15 +6,32 @@ This document describes how to release a new version of planning-system.
 
 ### MARKETPLACE_PAT Secret
 
-The release workflow submits a PR to the marketplace repository. This requires a Personal Access Token (PAT) with repository access.
+The release workflow submits a PR to the marketplace repository. This requires a Fine-Grained Personal Access Token (PAT) with write access to the marketplace repo.
 
-1. Create a GitHub PAT at https://github.com/settings/tokens
-2. Grant the token `repo` scope (for private repos) or `public_repo` scope (for public repos)
-3. Add the token as a repository secret named `MARKETPLACE_PAT`:
-   - Go to your repository Settings > Secrets and variables > Actions
-   - Click "New repository secret"
-   - Name: `MARKETPLACE_PAT`
-   - Value: Your PAT
+#### Creating the Token
+
+1. Go to https://github.com/settings/tokens?type=beta (Fine-grained tokens)
+2. Click **Generate new token**
+3. Configure the token:
+   - **Token name**: `planning-system-marketplace`
+   - **Expiration**: 90 days (or your preference)
+   - **Description**: `Auto-update marketplace on release`
+4. Under **Resource owner**, select the owner of the marketplace repo
+5. Under **Repository access**, select **Only select repositories**
+   - Choose `NotMyself/claude-dotnet-marketplace`
+6. Under **Repository permissions**, set:
+   - **Contents**: Read and write
+   - **Pull requests**: Read and write
+   - **Metadata**: Read (auto-granted)
+7. Click **Generate token** and copy it immediately
+
+#### Adding the Secret
+
+1. Go to your repository Settings > Secrets and variables > Actions
+2. Click **New repository secret**
+3. Name: `MARKETPLACE_PAT`
+4. Value: Paste the token
+5. Click **Add secret**
 
 If you don't configure this secret, releases will still succeed but the marketplace PR step will be skipped with a warning.
 
@@ -134,7 +151,10 @@ bun test
 
 **Solution**:
 1. Verify the secret exists in repository settings
-2. Ensure the PAT has `repo` or `public_repo` scope
+2. Ensure the PAT is a Fine-Grained token with:
+   - Repository access to `NotMyself/claude-dotnet-marketplace`
+   - **Contents**: Read and write permission
+   - **Pull requests**: Read and write permission
 3. Check that the PAT hasn't expired
 
 The release still succeeds - you can manually update the marketplace if needed.
