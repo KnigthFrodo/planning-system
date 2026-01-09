@@ -25,42 +25,42 @@ claude plugin install planning-system
 
 ## Commands
 
-### `/plan-new`
+### `planning-system:plan-new`
 
 Start planning a new feature. Claude will ask questions, help you think through edge cases, and create a structured plan.
 
 ```
-/plan-new
+planning-system:plan-new
 ```
 
-### `/plan-optimize`
+### `planning-system:plan-optimize`
 
 Break your plan into executable chunks. Creates a sequence of feature prompts that sub-agents can implement.
 
 ```
-/plan-optimize dev/plans/my-feature/plan.md
+planning-system:plan-optimize dev/plans/my-feature/plan.md
 ```
 
-### `/plan-orchestrate`
+### `planning-system:plan-orchestrate`
 
 Execute your plan. Spawns sub-agents for each feature, verifies their work, and creates a PR when done.
 
 ```
-/plan-orchestrate dev/plans/my-feature/
+planning-system:plan-orchestrate dev/plans/my-feature/
 ```
 
-### `/plan-parallel`
+### `planning-system:plan-parallel`
 
 Run multiple plans simultaneously using git worktrees.
 
 ```
-/plan-parallel dev/plans/feature-a dev/plans/feature-b
+planning-system:plan-parallel dev/plans/feature-a dev/plans/feature-b
 ```
 
 ## Typical Session
 
 ```
-> /plan-new
+> planning-system:plan-new
 
 Claude: What feature are you building?
 
@@ -68,11 +68,11 @@ You: I want to add user authentication with OAuth
 
 Claude: [asks clarifying questions, creates plan]
 
-> /plan-optimize dev/plans/auth/plan.md
+> planning-system:plan-optimize dev/plans/auth/plan.md
 
 Claude: [breaks plan into 5 features, creates prompts]
 
-> /plan-orchestrate dev/plans/auth/
+> planning-system:plan-orchestrate dev/plans/auth/
 
 Claude: [executes each feature, verifies work, creates PR]
 
@@ -84,7 +84,7 @@ PR created: https://github.com/you/repo/pull/42
 Just re-run the command. The system tracks progress and picks up where it left off.
 
 ```
-/plan-orchestrate dev/plans/my-feature/
+planning-system:plan-orchestrate dev/plans/my-feature/
 ```
 
 ## License

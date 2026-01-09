@@ -1,6 +1,6 @@
 # Planning Phase Workflow
 
-Detailed instructions for the `/plan-new` command.
+Detailed instructions for the `planning-system:plan-new` command.
 
 ## Step 1: Gather Requirements
 

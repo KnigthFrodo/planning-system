@@ -10,10 +10,10 @@ This is a planning and execution system for Claude Code that uses mechanical enf
 
 | Command | Purpose |
 |---------|---------|
-| `/plan-new` | Enter planning mode, create plan in `dev/plans/<title>/plan.md` |
-| `/plan-optimize <plan.md>` | Decompose plan into feature prompts and manifest |
-| `/plan-orchestrate <plan-dir>` | Execute features with sub-agents |
-| `/plan-parallel <dir1> <dir2>` | Execute multiple plans using git worktrees |
+| `planning-system:plan-new` | Enter planning mode, create plan in `dev/plans/<title>/plan.md` |
+| `planning-system:plan-optimize <plan.md>` | Decompose plan into feature prompts and manifest |
+| `planning-system:plan-orchestrate <plan-dir>` | Execute features with sub-agents |
+| `planning-system:plan-parallel <dir1> <dir2>` | Execute multiple plans using git worktrees |
 
 ## Setup
 
@@ -25,7 +25,7 @@ bun install
 ## Architecture
 
 ```
-/plan-new --> plan.md --> /plan-optimize --> manifest.jsonl + prompts/ --> /plan-orchestrate --> PR
+plan-new --> plan.md --> plan-optimize --> manifest.jsonl + prompts/ --> plan-orchestrate --> PR
                               |                                                    |
                               v                                                    v
                          Beads Epic                                          Beads Tasks
@@ -37,7 +37,7 @@ Hooks in `hooks/hooks.json` intercept Stop and SubagentStop events. TypeScript v
 
 ### Key Files
 
-- `.beads` - Contains Beads epic ID (created by /plan-new)
+- `.beads` - Contains Beads epic ID (created by plan-new)
 - `.devops` - Azure DevOps Story config (optional)
 - `.planconfig` - PR creation overrides (optional)
 - `manifest.jsonl` - Feature metadata with status, dependencies, verification commands

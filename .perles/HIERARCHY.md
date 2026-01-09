@@ -7,12 +7,12 @@ This document explains the parent-child relationships in beads and how to visual
 ### Planning Workflow Hierarchy
 
 ```
-Epic: User Authentication Plan (created by /plan-optimize)
-  ↳ Task F001: Implement login (created by /plan-optimize)
-      ↳ Bug: Fix login test coverage (created by /plan-orchestrate quality review)
-      ↳ Bug: Fix login error handling (created by /plan-orchestrate quality review)
-  ↳ Task F002: Implement logout (created by /plan-optimize)
-  ↳ Task F003: Add password reset (created by /plan-optimize)
+Epic: User Authentication Plan (created by plan-optimize)
+  ↳ Task F001: Implement login (created by plan-optimize)
+      ↳ Bug: Fix login test coverage (created by plan-orchestrate quality review)
+      ↳ Bug: Fix login error handling (created by plan-orchestrate quality review)
+  ↳ Task F002: Implement logout (created by plan-optimize)
+  ↳ Task F003: Add password reset (created by plan-optimize)
       ↳ Bug: Add password validation tests (created by quality review)
 ```
 
@@ -135,7 +135,7 @@ id = admin-f001 expand down depth 2
 ### Create Task as Child of Epic
 
 ```bash
-# /plan-optimize does this automatically
+# plan-optimize does this automatically
 bd create "Implement login feature" \
   --type=task \
   --parent=admin-epic-123 \
@@ -145,7 +145,7 @@ bd create "Implement login feature" \
 ### Create Bug as Child of Task
 
 ```bash
-# /plan-orchestrate does this during quality review
+# plan-orchestrate does this during quality review
 bd create "bugfix: Fix login test coverage in F001" \
   --type=bug \
   --parent=admin-f001 \

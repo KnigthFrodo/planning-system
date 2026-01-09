@@ -12,7 +12,7 @@ This skill provides a reliable system for planning and executing features using 
 ## Architecture
 
 ```
-/plan-new ──► plan.md ──► /plan-optimize ──► manifest.jsonl + prompts/ ──► /plan-orchestrate ──► PR
+plan-new ──► plan.md ──► plan-optimize ──► manifest.jsonl + prompts/ ──► plan-orchestrate ──► PR
                               │                                                    │
                               ▼                                                    ▼
                          Beads Epic                                          Beads Tasks
@@ -33,13 +33,13 @@ This skill provides a reliable system for planning and executing features using 
 All plans create a Beads epic. Each feature becomes a task under that epic. State reconciliation syncs manifest.jsonl with Beads status for crash recovery.
 
 ```bash
-# Epic created by /plan-new
+# Epic created by plan-new
 bd create --type=epic --title="Feature Name" --silent
 
-# Tasks created by /plan-optimize
+# Tasks created by plan-optimize
 bd create --type=task --parent=<epic-id> --title="F001: Setup types" --silent
 
-# Status updates by /plan-orchestrate
+# Status updates by planning-system:plan-orchestrate
 bd update <task-id> --status=in_progress
 bd close <task-id> --reason="Verified and committed"
 ```
@@ -72,10 +72,10 @@ Hooks in `.claude/hooks.json` run TypeScript verification scripts:
 
 | Task | Command |
 |------|---------|
-| Start new plan | `/plan-new <description>` |
-| Optimize plan | `/plan-optimize dev/plans/<title>/plan.md` |
-| Execute plan | `/plan-orchestrate dev/plans/<title>/` |
-| Parallel execution | `/plan-parallel <dir1> <dir2>` |
+| Start new plan | `planning-system:plan-new <description>` |
+| Optimize plan | `planning-system:plan-optimize dev/plans/<title>/plan.md` |
+| Execute plan | `planning-system:plan-orchestrate dev/plans/<title>/` |
+| Parallel execution | `planning-system:plan-parallel <dir1> <dir2>` |
 
 ## Workflow Files
 
@@ -100,7 +100,7 @@ Load these on-demand during command execution:
 
 ## Recovery
 
-The system is fully idempotent. Re-running `/plan-orchestrate` at any point:
+The system is fully idempotent. Re-running `planning-system:plan-orchestrate` at any point:
 1. Runs state reconciliation
 2. Skips completed features
 3. Resets and retries interrupted features

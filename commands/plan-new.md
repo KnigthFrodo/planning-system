@@ -44,4 +44,4 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 
 ## Next
 
-User runs `/plan-optimize dev/plans/<title>/plan.md`
+User runs `planning-system:plan-optimize dev/plans/<title>/plan.md`
