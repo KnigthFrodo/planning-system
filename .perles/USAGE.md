@@ -31,7 +31,7 @@ Switch between views with `Shift+J` (next) and `Shift+K` (previous).
 
 ### 2. Feature Development (Main Work Board)
 
-**When to use:** During `planning-system:plan-orchestrate` execution, daily feature work
+**When to use:** During `plan:orchestrate` execution, daily feature work
 
 **What it shows:**
 - Blocked: Features waiting on dependencies (red)
@@ -47,7 +47,7 @@ Switch between views with `Shift+J` (next) and `Shift+K` (previous).
 
 **Example workflow:**
 ```
-1. planning-system:plan-orchestrate starts running
+1. plan:orchestrate starts running
 2. Open perles "Feature Development" view
 3. Watch features move: Ready → In Progress → Testing → Done
 4. If feature stuck in "Blocked", use search mode to find blocker:
@@ -75,7 +75,7 @@ Switch between views with `Shift+J` (next) and `Shift+K` (previous).
 
 **Example workflow:**
 ```
-1. planning-system:plan-orchestrate runs quality review for feature F005
+1. plan:orchestrate runs quality review for feature F005
 2. Opens perles "Quality Review" view
 3. Sees 2 issues in "Test Coverage" column
 4. Press Enter on issue to see details
@@ -158,7 +158,7 @@ Switch between views with `Shift+J` (next) and `Shift+K` (previous).
 3. See 3 P0 issues (non-equivalent logic)
 4. Press Enter on first P0 issue
 5. See: TailorWell.Security - PasswordHash logic changed
-6. Use planning-system:plan-new to create plan to fix it
+6. Use plan:new to create plan to fix it
 ```
 
 ---
@@ -267,11 +267,11 @@ title ~ authentication
 
 ## Workflow Integration
 
-### Scenario: Running planning-system:plan-orchestrate
+### Scenario: Running plan:orchestrate
 
 1. **Start orchestration:**
    ```bash
-   planning-system:plan-orchestrate dev/active/user-authentication
+   plan:orchestrate dev/active/user-authentication
    ```
 
 2. **Open perles in another terminal:**
@@ -316,7 +316,7 @@ title ~ authentication
 
 4. **Create plans to fix:**
    ```bash
-   planning-system:plan-new  # Create plan for P0 issue
+   plan:new  # Create plan for P0 issue
    ```
 
 5. **Track progress:**

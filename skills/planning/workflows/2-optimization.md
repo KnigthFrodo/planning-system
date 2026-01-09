@@ -1,6 +1,6 @@
 # Optimization Phase Workflow
 
-Detailed instructions for the `planning-system:plan-optimize` command.
+Detailed instructions for the `plan:optimize` command.
 
 ## Step 1: Validate Input
 

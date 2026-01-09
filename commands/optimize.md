@@ -46,4 +46,4 @@ Files in `<plan-directory>/`:
 
 ## Next
 
-User runs `planning-system:plan-orchestrate <plan-directory>/`
+User runs `plan:orchestrate <plan-directory>/`

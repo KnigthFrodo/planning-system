@@ -29,8 +29,8 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
    ```
    Open separate Claude Code sessions:
 
-   Session 1: cd <worktree-1> && planning-system:plan-orchestrate .
-   Session 2: cd <worktree-2> && planning-system:plan-orchestrate .
+   Session 1: cd <worktree-1> && plan:orchestrate .
+   Session 2: cd <worktree-2> && plan:orchestrate .
    ```
 
 6. **Wait for user confirmation** that all plans are complete

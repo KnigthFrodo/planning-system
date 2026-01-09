@@ -1,6 +1,6 @@
 # Parallel Execution Workflow
 
-Detailed instructions for the `planning-system:plan-parallel` command.
+Detailed instructions for the `plan:parallel` command.
 
 ## Step 1: Validate Arguments
 
@@ -59,11 +59,11 @@ Parallel execution requires separate Claude Code sessions.
 
 Session 1 ($PLAN_1):
   cd $WORKTREE_1
-  planning-system:plan-orchestrate .
+  plan:orchestrate .
 
 Session 2 ($PLAN_2):
   cd $WORKTREE_2
-  planning-system:plan-orchestrate .
+  plan:orchestrate .
 
 When all complete, return here and type: done
 ```

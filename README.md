@@ -20,47 +20,47 @@ No more sub-agents claiming "done" when tests don't pass or code isn't committed
 
 ```bash
 claude plugin marketplace add NotMyself/claude-dotnet-marketplace
-claude plugin install planning-system
+claude plugin install plan
 ```
 
 ## Commands
 
-### `planning-system:plan-new`
+### `plan:new`
 
 Start planning a new feature. Claude will ask questions, help you think through edge cases, and create a structured plan.
 
 ```
-planning-system:plan-new
+plan:new
 ```
 
-### `planning-system:plan-optimize`
+### `plan:optimize`
 
 Break your plan into executable chunks. Creates a sequence of feature prompts that sub-agents can implement.
 
 ```
-planning-system:plan-optimize dev/plans/my-feature/plan.md
+plan:optimize dev/plans/my-feature/plan.md
 ```
 
-### `planning-system:plan-orchestrate`
+### `plan:orchestrate`
 
 Execute your plan. Spawns sub-agents for each feature, verifies their work, and creates a PR when done.
 
 ```
-planning-system:plan-orchestrate dev/plans/my-feature/
+plan:orchestrate dev/plans/my-feature/
 ```
 
-### `planning-system:plan-parallel`
+### `plan:parallel`
 
 Run multiple plans simultaneously using git worktrees.
 
 ```
-planning-system:plan-parallel dev/plans/feature-a dev/plans/feature-b
+plan:parallel dev/plans/feature-a dev/plans/feature-b
 ```
 
 ## Typical Session
 
 ```
-> planning-system:plan-new
+> plan:new
 
 Claude: What feature are you building?
 
@@ -68,11 +68,11 @@ You: I want to add user authentication with OAuth
 
 Claude: [asks clarifying questions, creates plan]
 
-> planning-system:plan-optimize dev/plans/auth/plan.md
+> plan:optimize dev/plans/auth/plan.md
 
 Claude: [breaks plan into 5 features, creates prompts]
 
-> planning-system:plan-orchestrate dev/plans/auth/
+> plan:orchestrate dev/plans/auth/
 
 Claude: [executes each feature, verifies work, creates PR]
 
@@ -84,7 +84,7 @@ PR created: https://github.com/you/repo/pull/42
 Just re-run the command. The system tracks progress and picks up where it left off.
 
 ```
-planning-system:plan-orchestrate dev/plans/my-feature/
+plan:orchestrate dev/plans/my-feature/
 ```
 
 ## License

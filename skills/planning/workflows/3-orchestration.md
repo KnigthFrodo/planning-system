@@ -1,6 +1,6 @@
 # Orchestration Phase Workflow
 
-Detailed instructions for the `planning-system:plan-orchestrate` command.
+Detailed instructions for the `plan:orchestrate` command.
 
 Includes: Recovery/idempotency, dual-repo PR support, DevOps sync.
 
@@ -254,7 +254,7 @@ This keeps task state in attention and creates accountability.
 
 If orchestration is interrupted at any point:
 
-1. Re-run `planning-system:plan-orchestrate $PLAN_DIR`
+1. Re-run `plan:orchestrate $PLAN_DIR`
 2. Reconciliation will detect and recover state
 3. Already-completed features will be skipped
 4. In-progress features will be reset and retried

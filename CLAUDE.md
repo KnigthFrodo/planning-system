@@ -10,10 +10,10 @@ This is a planning and execution system for Claude Code that uses mechanical enf
 
 | Command | Purpose |
 |---------|---------|
-| `planning-system:plan-new` | Enter planning mode, create plan in `dev/plans/<title>/plan.md` |
-| `planning-system:plan-optimize <plan.md>` | Decompose plan into feature prompts and manifest |
-| `planning-system:plan-orchestrate <plan-dir>` | Execute features with sub-agents |
-| `planning-system:plan-parallel <dir1> <dir2>` | Execute multiple plans using git worktrees |
+| `plan:new` | Enter planning mode, create plan in `dev/plans/<title>/plan.md` |
+| `plan:optimize <plan.md>` | Decompose plan into feature prompts and manifest |
+| `plan:orchestrate <plan-dir>` | Execute features with sub-agents |
+| `plan:parallel <dir1> <dir2>` | Execute multiple plans using git worktrees |
 
 ## Setup
 
