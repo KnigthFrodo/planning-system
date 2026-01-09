@@ -63,7 +63,7 @@ claude plugin install .
 ## Prerequisites
 
 - [Bun](https://bun.sh) - JavaScript runtime
-- [Beads CLI](https://github.com/beads/beads) - State management
+- [Beads CLI](https://github.com/steveyegge/beads) - State management
 - [Git](https://git-scm.com) - Version control
 ```
 

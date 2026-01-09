@@ -12,10 +12,10 @@ No more sub-agents claiming "done" when tests don't pass or code isn't committed
 
 ## Install
 
-**Prerequisites:** [Bun](https://bun.sh), [Beads](https://github.com/bpowers/beads), Git, GitHub CLI
+**Prerequisites:** [Bun](https://bun.sh), [Beads](https://github.com/steveyegge/beads), Git, GitHub CLI
 
 **Optional:**
-- [Perles](https://github.com/bpowers/perles) - Visual tracking UI for Beads
+- [Perles](https://github.com/zjrosen/perles) - Visual tracking UI for Beads
 - [Azure CLI](https://docs.microsoft.com/cli/azure/) with [DevOps extension](https://learn.microsoft.com/en-us/azure/devops/cli/) (`az extension add --name azure-devops`) - For Azure DevOps integration (PRs, work item sync)
 
 ```bash
