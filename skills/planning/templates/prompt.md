@@ -1,5 +1,7 @@
 # Feature: <ID> - <Title>
 
+**Supporting files:** `dev/plans/<name>/`
+
 ## Context
 
 See `context.md` for project background and architecture.
@@ -56,10 +58,9 @@ Run this command. Only claim completion if it succeeds.
 git add <files>
 git commit -m "feat(<scope>): <description>
 
-Implements: <ID>
-Decisions: <relevant-decision-ids>"
+Implements: <ID>"
 ```
 
 ## Next
 
-After verification passes, this feature is complete. The orchestrator will proceed to the next feature.
+After verification passes, close this task with `bd close <task-id>`. Run `bd ready` to see the next available task.

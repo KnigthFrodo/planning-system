@@ -2,13 +2,21 @@
 
 Detailed instructions for the `plan:optimize` command.
 
-## Step 1: Validate Input
+## Step 1: Load Epic
 
-1. Read the plan file from $ARGUMENTS
-2. Read `.beads` file to get epic ID
-3. Verify epic exists: `bd show <epic-id>`
+1. Fetch epic: `bd show <epic-id>`
+2. Read plan content from epic description
+3. Verify epic is open or in_progress
 
-## Step 2: Analyze Plan
+## Step 2: Create Plan Directory
+
+1. Generate kebab-case name from epic title:
+   - "User Authentication" → `user-authentication`
+   - "API Rate Limiting" → `api-rate-limiting`
+
+2. Create directory: `dev/plans/<name>/`
+
+## Step 3: Analyze Plan
 
 Extract from the plan:
 
@@ -19,7 +27,29 @@ Extract from the plan:
 - Testing strategy
 - Decisions made
 
-## Step 3: Decompose into Features
+## Step 4: Create Supporting Files
+
+Generate these files in `dev/plans/<name>/`:
+
+**context.md** - Project rationale, architecture vision (from plan summary)
+
+**constraints.md** - Global rules:
+```markdown
+# Global Constraints
+
+- Complete one feature at a time
+- Run verification before claiming complete
+- Commit after each feature
+- Reference feature IDs in commits
+```
+
+**decisions.md** - Decision log from plan (ID, decision, rationale)
+
+**edge-cases.md** - Edge cases from plan (ID, case, handling, related features)
+
+**testing-strategy.md** - Testing approach from plan
+
+## Step 5: Decompose into Features
 
 Break the plan into discrete, testable features following progressive disclosure:
 
@@ -36,100 +66,145 @@ Each feature should:
 - Have concrete acceptance criteria
 - Have a verification command
 
-## Step 4: Create Beads Tasks
+## Step 6: Create Beads Tasks with Prompts
 
-For each feature, create a task under the epic:
+For each feature, create a task under the epic with the **full prompt in the description**:
 
 ```bash
-TASK_ID=$(bd create --type=task \
+bd create --type=task \
   --parent=<epic-id> \
-  --title="<feature-id>: <feature-title>" \
-  --description="<acceptance-criteria>" \
-  --silent)
+  --title="F001: <feature-title>" \
+  --description="<full-prompt-content>" \
+  --silent
 ```
 
-Store task IDs for manifest creation.
+### Prompt Content Template
 
-## Step 5: Generate Manifest
+Each task description should contain:
 
-Create `manifest.jsonl` with one JSON object per line.
-
-Load template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/manifest.md` for field reference.
-
-Required fields:
-
-```json
-{
-  "id": "F001",
-  "file": "prompts/01-setup-types.md",
-  "title": "Setup core types",
-  "description": "Create TypeScript interfaces and types",
-  "depends_on": [],
-  "status": "pending",
-  "verification": "bun run tsc --noEmit",
-  "beads_id": "<task-id-from-step-4>"
-}
-```
-
-## Step 6: Generate Feature Prompts
-
-For each feature, create `prompts/NN-<slug>.md`.
-
-Load template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/prompt.md`.
-
-Each prompt must include:
-
-- Feature ID and title
-- Prior work references
-- Single clear objective
-- Scope constraint: "It is unacceptable to implement features beyond this task's scope."
-- Relevant decisions from plan
-- Edge cases to handle
-- Files to create/modify
-- Acceptance criteria
-- Verification command
-- Commit message format
-
-## Step 7: Create Supporting Files
-
-Generate these files in the plan directory:
-
-**context.md** - Project rationale, architecture vision (from plan summary)
-
-**constraints.md** - Global rules:
 ```markdown
-# Global Constraints
+# Feature: F001 - <Title>
 
-- One feature per session
-- Run verification before claiming complete
-- Commit after each feature
-- Reference decision IDs in commits
+**Supporting files:** `dev/plans/<name>/`
+
+## Context
+See `context.md` for project background and architecture.
+
+## Prior Work
+Features completed before this one:
+- <F00X>: <What it established>
+
+## Objective
+<Single, clear statement of what this feature accomplishes>
+
+> **Scope Constraint**: It is unacceptable to implement features beyond this task's scope. Complete ONLY this feature.
+
+## Relevant Decisions
+From `decisions.md`:
+- **D0X**: <Decision> — <Why it matters here>
+
+## Edge Cases
+From `edge-cases.md`:
+- **EC0X**: <Case> → <Required handling>
+
+## Files to Create/Modify
+| File | Purpose |
+|------|---------|
+| `path/to/file.ts` | What to create or change |
+
+## Implementation Details
+<Specific guidance, patterns to follow, interfaces to implement>
+
+## Acceptance Criteria
+- [ ] <Testable requirement 1>
+- [ ] <Testable requirement 2>
+- [ ] Edge case <EC0X> handled
+- [ ] Tests pass: `<test command>`
+
+## Verification
+```bash
+<verification-command>
+```
+Run this command. Only claim completion if it succeeds.
+
+## Commit
+```bash
+git add <files>
+git commit -m "feat(<scope>): <description>
+
+Implements: F001"
+```
 ```
 
-**decisions.md** - Decision log from plan (ID, decision, rationale)
+Store task IDs for dependency setup.
 
-**edge-cases.md** - Edge cases from plan (ID, case, handling, related features)
+## Step 7: Set Up Dependencies
 
-**testing-strategy.md** - Testing approach from plan
-
-**README.md** - Orchestration guide
-
-## Step 8: Validate Output
-
-Verify all files created:
-
-- [ ] manifest.jsonl exists and valid JSON per line
-- [ ] Each manifest entry has beads_id
-- [ ] All referenced prompt files exist
-- [ ] context.md, constraints.md, decisions.md, edge-cases.md exist
-- [ ] testing-strategy.md, README.md exist
-
-## Step 9: DevOps Task Creation (Optional)
-
-If `.devops` file exists and you want DevOps task tracking:
+Use `bd dep add` to establish dependencies between features:
 
 ```bash
-bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification sync-devops.ts <plan-dir> --create-tasks
+# F002 depends on F001 (F001 must complete before F002)
+bd dep add <task-id-F002> <task-id-F001>
 ```
 
-This creates DevOps tasks linked to the Story for each feature.
+This ensures `bd ready` only shows tasks with no blockers.
+
+## Step 8: Update Epic with README
+
+Update the epic description to append README content:
+
+```bash
+bd update <epic-id> --description="<original-plan>
+
+---
+
+## Execution Guide
+
+### Features
+| ID | Title | Depends On |
+|----|-------|------------|
+| F001 | ... | - |
+| F002 | ... | F001 |
+| F003 | ... | F001, F002 |
+
+### Workflow
+\`\`\`bash
+bd ready                                    # Find available work
+bd show <task-id>                           # Review task (prompt in description)
+bd update <task-id> --status=in_progress    # Claim work
+# ... do the work ...
+bd close <task-id>                          # Complete
+\`\`\`
+
+### Supporting Files
+Location: \`dev/plans/<name>/\`
+- context.md - Project background
+- constraints.md - Global rules
+- decisions.md - Architectural decisions
+- edge-cases.md - Edge case catalog
+- testing-strategy.md - Testing approach
+"
+```
+
+## Step 9: Validate Output
+
+Verify all created:
+
+- [ ] `dev/plans/<name>/` directory exists
+- [ ] context.md, constraints.md, decisions.md, edge-cases.md, testing-strategy.md exist
+- [ ] Beads tasks created under epic
+- [ ] Each task has full prompt in description
+- [ ] Dependencies established with `bd dep add`
+- [ ] Epic description updated with README content
+
+## Step 10: DevOps Task Creation (Optional)
+
+If DevOps integration is needed:
+
+```bash
+bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification sync-devops.ts <epic-id> --create-tasks
+```
+
+## Complete
+
+The plan is now optimized. User can begin execution with `bd ready`.

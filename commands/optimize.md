@@ -1,11 +1,11 @@
 ---
-description: Optimize a plan for sub-agent implementation
-argument-hint: "<plan-file-path>"
+description: Decompose a plan into features and Beads tasks
+argument-hint: "<epic-id>"
 ---
 
 # Optimize Plan
 
-Transform a plan into feature prompts optimized for sub-agent execution.
+Transform a plan epic into executable features with Beads tasks.
 
 ## Before Starting
 
@@ -13,37 +13,49 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 
 ## Input
 
-- Plan file: $ARGUMENTS (e.g., `dev/plans/my-feature/plan.md`)
-- Output directory: Parent of plan file
+- Epic ID: $ARGUMENTS (e.g., `my-feature-abc`)
+- Plan content: Retrieved from epic description
 
 ## Workflow
 
-1. **Validate input**: Confirm plan file exists, read `.beads` file for epic ID
+1. **Load epic**: Fetch epic with `bd show <epic-id>`, read plan from description
 
-2. **Load workflow details**: Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/workflows/2-optimization.md`
+2. **Create plan directory**:
+   - Generate kebab-case name from epic title
+   - Create `dev/plans/<name>/`
 
-3. **Follow the workflow**:
-   - Decompose plan into features
-   - Create manifest.jsonl with Beads task IDs
-   - Generate feature prompts
+3. **Load workflow details**: Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/workflows/2-optimization.md`
+
+4. **Follow the workflow**:
+   - Analyze plan and decompose into features
    - Create supporting files (context.md, constraints.md, etc.)
+   - Create Beads tasks with full prompts in description
+   - Set up feature dependencies
+   - Update epic with README content
 
-4. **Verify output**: All files created, manifest valid, Beads tasks created
+5. **Verify output**: All files created, Beads tasks exist with prompts
 
 ## Constraints
 
-- One feature per prompt file
-- Each feature must have Beads task as child of epic
-- Manifest must be valid JSONL with all required fields
+- One feature per Beads task
+- Each task description contains full executable prompt
+- Include supporting files path at top of each prompt
+- Use `bd dep add` to establish feature dependencies
 
 ## Output
 
-Files in `<plan-directory>/`:
-- `manifest.jsonl` - Feature metadata
-- `context.md`, `constraints.md`, `decisions.md`, `edge-cases.md`
-- `testing-strategy.md`, `README.md`
-- `prompts/*.md` - Individual feature prompts
+**Files in `dev/plans/<name>/`:**
+- `context.md` - Project background
+- `constraints.md` - Global rules
+- `decisions.md` - Architectural decisions
+- `edge-cases.md` - Edge case catalog
+- `testing-strategy.md` - Testing approach
+
+**Beads:**
+- Tasks under epic with full prompts in descriptions
+- Dependencies between tasks
+- Epic description updated with README content
 
 ## Next
 
-User runs `plan:orchestrate <plan-directory>/`
+User runs `bd ready` to find available work, then executes tasks one at a time.

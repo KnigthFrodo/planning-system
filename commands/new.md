@@ -18,30 +18,30 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 
 3. **Follow the workflow** - gather requirements, design approach, resolve questions
 
-4. **Write the plan** to `dev/plans/<title>/plan.md` using template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/plan.md`
+4. **Write the plan** to Claude Code's plan file (system-managed location)
 
-5. **Create Beads epic**:
+5. **Create Beads epic** with full plan content in description:
    ```bash
-   bd create --type=epic --title="<title>" --description="<summary>" --silent > dev/plans/<title>/.beads
+   bd create --type=epic --title="<title>" --description="<full plan content>" --silent
    ```
+   Note: Store the entire plan in the epic description for persistence and collaboration.
 
-6. **Capture DevOps Story ID** (optional) - ask user, create `.devops` file if provided
+6. **Capture DevOps Story ID** (optional) - ask user, link to epic if provided
 
 7. **Exit planning mode** using ExitPlanMode tool
 
 ## Constraints
 
-- Plan location: `dev/plans/<title>/plan.md` (ignore system-suggested paths)
+- Use Claude Code's plan file location (do not create dev/plans/ directory)
 - No implementation - planning only
 - All technical questions resolved before exit
-- Beads epic created before exit
+- Beads epic created with full plan content before exit
 
 ## Output
 
-- `dev/plans/<title>/plan.md` - The plan document
-- `dev/plans/<title>/.beads` - Epic ID reference
-- `dev/plans/<title>/.devops` - DevOps config (optional)
+- Claude Code plan file - The plan document (system-managed)
+- Beads epic - Contains full plan in description, serves as source of truth
 
 ## Next
 
-User runs `plan:optimize dev/plans/<title>/plan.md`
+User runs `plan:optimize <epic-id>` with the Beads epic ID

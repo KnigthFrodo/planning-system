@@ -1,81 +1,85 @@
 ---
 name: planning
-description: "Comprehensive feature planning, optimization, and orchestration system. Provides workflows for creating plans, decomposing into features, and executing with sub-agents. Integrates with Beads for state management and optionally Azure DevOps."
+description: "Comprehensive feature planning and execution system. Provides workflows for creating plans, decomposing into features, and pull-based execution. Uses Beads as source of truth for state management."
 ---
 
 # Planning System Skill
 
 ## Overview
 
-This skill provides a reliable system for planning and executing features using Claude Code sub-agents. It emphasizes mechanical enforcement over instruction compliance.
+This skill provides a reliable system for planning and executing features. It uses Beads as the source of truth for plans and task state, with mechanical enforcement of quality gates.
 
 ## Architecture
 
 ```
-plan-new ──► plan.md ──► plan-optimize ──► manifest.jsonl + prompts/ ──► plan-orchestrate ──► PR
-                              │                                                    │
-                              ▼                                                    ▼
-                         Beads Epic                                          Beads Tasks
+plan:new ──► Beads Epic (plan in description)
+                │
+                ▼
+plan:optimize ──► Beads Tasks (prompts in descriptions)
+                │   + dev/plans/<name>/ (supporting files)
+                ▼
+bd ready ──► Pull-based execution (one task at a time)
 ```
 
 ## Key Components
 
 | Component | Purpose |
 |-----------|---------|
-| Commands | Lean workflow coordinators (~50 lines each) |
+| Commands | Lean workflow coordinators |
 | Workflows | Detailed phase instructions (loaded on-demand) |
 | Templates | Standardized file formats |
 | Verification | TypeScript scripts for mechanical enforcement |
-| Hooks | Block shortcuts at Stop and SubagentStop events |
+| Hooks | Block shortcuts at Stop events |
 
 ## Beads Integration (Required)
 
-All plans create a Beads epic. Each feature becomes a task under that epic. State reconciliation syncs manifest.jsonl with Beads status for crash recovery.
+All plans are stored in Beads epics. Each feature becomes a task under that epic with the full prompt in the description.
 
 ```bash
-# Epic created by plan-new
-bd create --type=epic --title="Feature Name" --silent
+# Epic created by plan:new (plan content in description)
+bd create --type=epic --title="Feature Name" --description="<full plan>" --silent
 
-# Tasks created by plan-optimize
-bd create --type=task --parent=<epic-id> --title="F001: Setup types" --silent
+# Tasks created by plan:optimize (prompts in description)
+bd create --type=task --parent=<epic-id> --title="F001: Setup types" --description="<full prompt>" --silent
 
-# Status updates by plan:orchestrate
-bd update <task-id> --status=in_progress
-bd close <task-id> --reason="Verified and committed"
+# Dependencies between features
+bd dep add <task-F002> <task-F001>
+
+# Pull-based execution
+bd ready                                    # Find available work
+bd update <task-id> --status=in_progress    # Claim work
+bd close <task-id>                          # Complete work
 ```
 
 ## DevOps Integration (Optional)
 
-If `.devops` file exists in plan directory, Story status syncs with Beads epic:
-
-```bash
-# .devops file format
-STORY_ID=12345
-ORG=myorg
-PROJECT=MyProject
-```
-
-## Dual-Repo Support
-
-PR creation supports both GitHub and Azure DevOps repos. Detection is automatic from git remote URL, with override via `.planconfig`.
+Azure DevOps Story status can sync with Beads epic via `sync-devops.ts`.
 
 ## Verification System
 
-Hooks in `.claude/hooks.json` run TypeScript verification scripts:
+Hooks in `hooks/hooks.json` run TypeScript verification scripts:
 
-- **Stop hook**: Blocks completion if tests fail or changes uncommitted
-- **SubagentStop hook**: Audits sub-agent claims before accepting
-- **reconcile-state.ts**: Ensures idempotent orchestration
-- **verify-feature.ts**: Mechanical feature verification
+- **Stop hook**: Blocks completion if quality gates fail
+
+Quality gates (all configurable via `.planconfig`):
+- No uncommitted changes
+- Build command succeeds
+- Test command succeeds
+- Lint command succeeds
+- Format command succeeds
+- Static analysis succeeds
+- Verification agent approves test quality and requirements
 
 ## Quick Reference
 
 | Task | Command |
 |------|---------|
-| Start new plan | `plan:new <description>` |
-| Optimize plan | `plan:optimize dev/plans/<title>/plan.md` |
-| Execute plan | `plan:orchestrate dev/plans/<title>/` |
-| Parallel execution | `plan:parallel <dir1> <dir2>` |
+| Start new plan | `plan:new` |
+| Optimize plan | `plan:optimize <epic-id>` |
+| Find work | `bd ready` |
+| View task | `bd show <task-id>` |
+| Claim work | `bd update <task-id> --status=in_progress` |
+| Complete work | `bd close <task-id>` |
 
 ## Workflow Files
 
@@ -83,25 +87,35 @@ Load these on-demand during command execution:
 
 - `workflows/1-planning.md` - Planning phase details
 - `workflows/2-optimization.md` - Optimization phase details
-- `workflows/3-orchestration.md` - Orchestration phase details
 - `workflows/4-parallel.md` - Parallel execution details
 
 ## Templates
 
 - `templates/plan.md` - Plan document structure
-- `templates/manifest.jsonl` - Manifest entry format
 - `templates/prompt.md` - Feature prompt structure
+- `templates/context.md` - Context file template
+- `templates/constraints.md` - Constraints file template
 
-## Reference
+## Supporting Files
 
-- `reference/beads-patterns.md` - Beads CLI commands
-- `reference/devops-patterns.md` - Azure DevOps integration
-- `reference/quality-gates.md` - Verification requirements
+Created by `plan:optimize` in `dev/plans/<name>/`:
 
-## Recovery
+- `context.md` - Project background and architecture
+- `constraints.md` - Global rules for all features
+- `decisions.md` - Architectural decisions log
+- `edge-cases.md` - Known edge cases and handling
+- `testing-strategy.md` - Testing approach
 
-The system is fully idempotent. Re-running `plan:orchestrate` at any point:
-1. Runs state reconciliation
-2. Skips completed features
-3. Resets and retries interrupted features
-4. Continues from where it left off
+## Project Configuration
+
+`.planconfig` (YAML, project root):
+
+```yaml
+build_command: "npm run build"
+test_command: "npm test"
+lint_command: "eslint ."
+format_command: "prettier --check ."
+static_analysis_command: "sonar-scanner"
+```
+
+All commands optional. Missing commands skip that verification step.

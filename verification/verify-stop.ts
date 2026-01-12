@@ -1,72 +1,60 @@
 /**
  * Stop Hook Verification
  *
- * Runs when Claude attempts to stop responding during orchestration.
+ * Runs when Claude attempts to stop responding.
  * Blocks completion if quality gates not met.
- * Also ensures Beads tasks/epics are closed for completed work.
+ *
+ * Quality gates (in order):
+ * 1. No uncommitted changes
+ * 2. Build command (if configured)
+ * 3. Test command (if configured)
+ * 4. Lint command (if configured)
+ * 5. Format command (if configured)
+ * 6. Static analysis command (if configured)
+ * 7. Verification agent (test quality + requirements)
  *
  * Exit codes:
  * - 0: Allow stop
  * - 2: Block stop (stderr fed back to Claude)
  */
 
-import { $ } from "bun";
-import { checkUncommittedChanges, getRecentCommits } from "./lib/git";
+import { checkUncommittedChanges } from "./lib/git";
 import { runCommand } from "./lib/tests";
-import { getCurrentFeature, getCompletedFeatures } from "./lib/manifest";
-
-const PLAN_DIR = process.env.PLAN_DIR || ".";
-
-async function getBeadsStatus(taskId: string): Promise<string | null> {
-  try {
-    const result = await $`bd show ${taskId} --json`.json();
-    return result.status || null;
-  } catch {
-    return null;
-  }
-}
-
-async function closeBeadsTask(taskId: string, reason: string): Promise<boolean> {
-  try {
-    await $`bd close ${taskId} --reason=${reason}`.quiet();
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function closeEligibleEpics(): Promise<void> {
-  try {
-    await $`bd epic close-eligible`.quiet();
-  } catch {
-    // Ignore errors - epic may not exist or already closed
-  }
-}
+import { loadConfig, getVerificationCommands } from "./lib/config";
+import { runVerificationAgent } from "./lib/verification-agent";
 
 async function main(): Promise<void> {
   const errors: string[] = [];
 
-  // Check for uncommitted changes
+  // 1. Check for uncommitted changes (always runs)
   const uncommitted = await checkUncommittedChanges();
   if (uncommitted.length > 0) {
     errors.push(`Uncommitted changes:\n${uncommitted.join("\n")}`);
   }
 
-  // Check if we're in orchestration mode (manifest exists)
-  const feature = await getCurrentFeature(PLAN_DIR);
-  if (feature?.status === "in_progress") {
-    // Verify the feature's verification command passed
-    const verifyResult = await runCommand(feature.verification);
-    if (!verifyResult.success) {
-      errors.push(`Verification failed: ${feature.verification}\n${verifyResult.output}`);
-    }
+  // Load project config
+  const { config, path: configPath, error: configError } = loadConfig();
 
-    // Check for commit with feature ID
-    const commits = await getRecentCommits(5);
-    const hasFeatureCommit = commits.some(c => c.includes(feature.id));
-    if (!hasFeatureCommit) {
-      errors.push(`No commit found containing feature ID: ${feature.id}`);
+  if (configError) {
+    errors.push(`Configuration error: ${configError}`);
+  }
+
+  // 2-6. Run configured verification commands
+  if (config) {
+    const commands = getVerificationCommands(config);
+
+    for (const { name, command } of commands) {
+      const result = await runCommand(command);
+      if (!result.success) {
+        errors.push(`${name} failed: ${command}\n${result.output}`);
+      }
     }
+  }
+
+  // 7. Verification agent - check test quality and requirements
+  const verificationResult = await runVerificationAgent();
+  if (!verificationResult.passed) {
+    errors.push(`Verification agent found issues:\n${verificationResult.issues.join("\n")}`);
   }
 
   if (errors.length > 0) {
@@ -75,20 +63,7 @@ async function main(): Promise<void> {
     process.exit(2);
   }
 
-  // Close Beads tasks for completed features (mechanical enforcement)
-  const completedFeatures = getCompletedFeatures(PLAN_DIR);
-  for (const completed of completedFeatures) {
-    if (completed.beads_id) {
-      const status = await getBeadsStatus(completed.beads_id);
-      if (status && status !== "closed") {
-        await closeBeadsTask(completed.beads_id, `Stop hook: ${completed.id} completed`);
-      }
-    }
-  }
-
-  // Close any epics where all children are complete
-  await closeEligibleEpics();
-
+  // All gates passed
   process.exit(0);
 }
 

@@ -29,23 +29,9 @@ When multiple valid approaches exist, present options with pros/cons. Only ask t
 3. **Consider edge cases** - What could go wrong
 4. **Draft approach** - Technical implementation strategy
 
-## Step 3: Generate Plan Title
+## Step 3: Write the Plan
 
-Create a kebab-case title from the discussion:
-
-- `user-authentication`
-- `api-rate-limiting`
-- `realtime-notifications`
-
-## Step 4: Write the Plan
-
-Create directory and plan file:
-
-```
-dev/plans/<title>/plan.md
-```
-
-Load template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/plan.md` and fill in:
+Write the plan to Claude Code's system-managed plan file. Include:
 
 - Summary of the feature
 - Requirements from discussion
@@ -57,29 +43,27 @@ Load template from `${CLAUDE_PLUGIN_ROOT}/skills/planning/templates/plan.md` and
 
 **Exclude**: Time estimates, effort sizing, approval workflows.
 
-## Step 5: Create Beads Epic
+## Step 4: Create Beads Epic
+
+Create a Beads epic with the **full plan content** in the description:
 
 ```bash
-EPIC_ID=$(bd create --type=epic \
-  --title="<Plan Title>" \
-  --description="<Summary from plan>" \
-  --silent)
-
-echo "$EPIC_ID" > dev/plans/<title>/.beads
+bd create --type=epic \
+  --title="<Short descriptive title>" \
+  --description="<Full plan content from step 3>" \
+  --silent
 ```
 
-## Step 6: DevOps Story (Optional)
+The epic description serves as the source of truth for the plan. This enables:
+- Collaboration (others can see the plan via `bd show <epic-id>`)
+- Persistence (survives session resets)
+- Decomposition (`plan:optimize` reads plan from epic)
+
+## Step 5: DevOps Story (Optional)
 
 Ask: "Do you have an Azure DevOps Story ID for this work? (Enter to skip)"
 
-If provided, collect org and project, then create `.devops`:
-
-```bash
-# dev/plans/<title>/.devops
-STORY_ID=<story-id>
-ORG=<org-name>
-PROJECT=<project-name>
-```
+If provided, link the story to the epic using `bd update` or note the association.
 
 ## Pre-Exit Checklist
 
@@ -87,11 +71,14 @@ Before calling ExitPlanMode, verify:
 
 - [ ] All technical questions resolved
 - [ ] User approved all design decisions
-- [ ] Plan written to correct location
-- [ ] Beads epic created
-- [ ] `.beads` file contains epic ID
-- [ ] DevOps captured (if provided)
+- [ ] Plan written to Claude Code plan file
+- [ ] Beads epic created with full plan in description
+- [ ] DevOps story linked (if provided)
 
 ## Exit
 
 Call ExitPlanMode. **STOP** - do not implement anything.
+
+## Next Step
+
+User runs `plan:optimize <epic-id>` to decompose into features.
