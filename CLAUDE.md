@@ -22,15 +22,32 @@ bun install
 
 ## Architecture
 
+### Standard Planning (single feature)
 ```
 plan:new ──► Beads Epic (plan in description)
                 │
                 ▼
-plan:optimize ──► Beads Tasks (prompts in descriptions) + dev/plans/<name>/ (supporting files)
+plan:optimize ──► Beads Tasks (prompts in descriptions) + dev/plans/<name>/
                 │
                 ▼
 bd ready ──► Pull-based execution (one task at a time)
 ```
+
+### Master Planning (large initiative with multiple features)
+```
+plan:new --master ──► Beads Epic with child Features (brief descriptions)
+                          │
+                          ▼
+plan:new <feature-id> ──► Detailed plan added to Feature description
+                          │
+                          ▼
+plan:optimize <feature-id> ──► Beads Tasks under Feature + dev/plans/<name>/
+                          │
+                          ▼
+bd ready ──► Pull-based execution (one task at a time)
+```
+
+Workflow compliance gate enforces this progression - you cannot skip steps.
 
 ### Mechanical Enforcement
 
@@ -64,13 +81,30 @@ All commands are optional. If not configured, those verification steps are skipp
 ## Quality Gates
 
 Work is complete when ALL configured gates pass:
-- No uncommitted changes (`git status --porcelain` empty)
-- Build command succeeds (if configured)
-- Test command succeeds (if configured)
-- Lint command succeeds (if configured)
-- Format command succeeds (if configured)
-- Static analysis succeeds (if configured)
-- Verification agent approves test quality and requirements coverage
+
+0. **Workflow compliance** - Enforces proper planning workflow:
+   - Cannot implement Features directly → run `plan:optimize <feature-id>` first
+   - Cannot implement Epics directly → run `plan:new` then `plan:optimize`
+   - Tasks under Features require parent Feature to be planned and optimized
+   - Bypassed for: bugs, research tasks (title starts with "Research:")
+1. No uncommitted changes (`git status --porcelain` empty)
+2. Build command succeeds (if configured)
+3. Test command succeeds (if configured)
+4. Lint command succeeds (if configured)
+5. Format command succeeds (if configured)
+6. Static analysis succeeds (if configured)
+7. Verification agent approves test quality and requirements coverage
+
+### Feature Planning Detection
+
+A Feature is considered "planned" if:
+- Description contains `## Objective`/`## Summary` AND `## Implementation`/`## Deliverables`
+- Description is at least 500 characters
+- OR supporting files exist at `dev/plans/<feature-name>/`
+
+A Feature is considered "optimized" if:
+- Has Task children in Beads
+- OR supporting files exist at `dev/plans/<feature-name>/`
 
 ## Execution Workflow
 

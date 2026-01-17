@@ -44,37 +44,58 @@ plan:optimize <epic-id>
 
 ## Typical Session
 
+### Standard Planning (single feature)
+
 ```
 > plan:new
 
 Claude: What feature are you building?
 
-You: I want to add user authentication with OAuth
+You: I want to add a health check endpoint
 
 Claude: [asks clarifying questions, creates plan, stores in Beads epic]
 
-Epic created: auth-oauth-xyz
+Epic created: health-check-abc
 
-> plan:optimize auth-oauth-xyz
+> plan:optimize health-check-abc
 
-Claude: [breaks plan into 5 features, creates Beads tasks with prompts]
-
-> bd ready
-
-Available tasks:
-  auth-oauth-xyz.1  F001: Setup OAuth types
-
-> bd update auth-oauth-xyz.1 --status=in_progress
-
-[work on the feature...]
-
-> bd close auth-oauth-xyz.1
+Claude: [creates Beads tasks with prompts]
 
 > bd ready
-
-Available tasks:
-  auth-oauth-xyz.2  F002: Implement OAuth flow
+> bd update <task-id> --status=in_progress
+[work, then close when done]
 ```
+
+### Master Planning (large initiative)
+
+For complex features with multiple sub-features:
+
+```
+> plan:new --master
+
+Claude: What initiative are you building?
+
+You: Real-time chat with rooms, users, and message history
+
+Claude: [creates Epic with child Features - brief descriptions only]
+
+Epic created: chat-app-xyz
+Features: F001 Project Setup, F002 Auth, F003 Rooms, ...
+
+> plan:new chat-app-xyz.f001
+
+Claude: [detailed planning for F001, updates Feature description]
+
+> plan:optimize chat-app-xyz.f001
+
+Claude: [creates Tasks under F001 with prompts]
+
+> bd ready
+> bd update <task-id> --status=in_progress
+[work on tasks, close when done, then plan:new the next feature]
+```
+
+**Workflow is enforced** - you cannot skip steps. Trying to implement a Feature directly will be blocked until you run `plan:optimize`.
 
 ## Project Configuration
 
