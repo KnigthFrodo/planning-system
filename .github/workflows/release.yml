@@ -163,24 +163,17 @@ jobs:
             # Extract footer (everything after the --- following the plan section)
             # Find line number of ### plan, then find the next --- after it
             PLAN_LINE=$(grep -n "^### plan$" "$README_FILE" | head -1 | cut -d: -f1)
+            DEFAULT_FOOTER=$(printf '%s\n\n%s\n\n%s' '---' '## License' 'MIT')
             if [ -n "$PLAN_LINE" ]; then
               FOOTER_START=$(tail -n +$PLAN_LINE "$README_FILE" | grep -n "^---$" | head -1 | cut -d: -f1)
               if [ -n "$FOOTER_START" ]; then
                 FOOTER_LINE=$((PLAN_LINE + FOOTER_START - 1))
                 FOOTER=$(tail -n +$FOOTER_LINE "$README_FILE")
               else
-                FOOTER="---
-
-## License
-
-MIT"
+                FOOTER="$DEFAULT_FOOTER"
               fi
             else
-              FOOTER="---
-
-## License
-
-MIT"
+              FOOTER="$DEFAULT_FOOTER"
             fi
 
             # Reconstruct README with updated plugin content
