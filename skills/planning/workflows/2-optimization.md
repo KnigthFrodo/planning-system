@@ -243,6 +243,81 @@ Use this workflow when optimizing a **feature** into tasks. Features typically c
 
 3. **If no supporting files exist**, create them in `dev/plans/<feature-name>/`
 
+## Step 2.5: Evaluate Research Needs
+
+Before decomposing into tasks, evaluate if research is needed.
+
+**Check for research indicators in description:**
+
+1. **Scan for uncertainty markers:**
+   - "TBD", "TODO", "unclear", "unknown", "investigate", "explore", "evaluate", "compare"
+   - Questions without answers ("how to", "which library", "what approach")
+   - Missing sections (no Implementation/Approach/Deliverables)
+   - Technology choices not made
+   - Dependencies on external systems not yet understood
+   - Performance/scaling requirements without clear approach
+
+2. **If research indicators found:**
+
+   Tell the user:
+   > This feature may benefit from research before optimization.
+   >
+   > **Detected uncertainties:**
+   > - <list specific uncertainties found>
+   >
+   > Would you like to create research tasks to explore these areas first?
+
+   Use AskUserQuestion with options:
+   - "Yes, create research tasks"
+   - "No, proceed with optimization"
+
+   If yes → Ask for research topic(s), create research tasks, exit
+   If no → Proceed with optimization (continue to Step 3)
+
+3. **If no research indicators found:**
+
+   Tell the user:
+   > This feature appears ready for optimization - no research gaps detected.
+   >
+   > Would you like to create research tasks anyway?
+
+   Use AskUserQuestion with options:
+   - "No, proceed with optimization" (Recommended)
+   - "Yes, I want to research something first"
+
+   If yes → Ask for research topic(s), create research tasks, exit
+   If no → Proceed with optimization (continue to Step 3)
+
+**Creating Research Tasks:**
+
+If user wants research:
+1. Ask: "What topic(s) should the research cover?"
+2. Create research task(s) under the feature:
+   ```bash
+   bd create --type=task \
+     --parent=<feature-id> \
+     --title="Research: <topic>" \
+     --description="Explore <topic> to inform feature implementation."
+   ```
+3. Tell user: "Research tasks created. Run `bd ready` to start research. When complete, run `plan:optimize <feature-id>` again."
+4. Exit (do not proceed with optimization)
+
+**Research Task Completion Flow:**
+
+When a research task is completed, the parent Feature's description should be updated with a link to the research document:
+
+1. Research task is created under Feature (Feature stays `open`, not `in_progress`)
+2. User marks research task as `in_progress` and executes it
+3. Research produces a document (e.g., `dev/plans/<feature-name>/research/<topic>.md`)
+4. When research task is closed, Feature description is updated:
+   ```
+   ## Research Completed
+   - [<topic>](dev/plans/<feature-name>/research/<topic>.md) - <summary>
+   ```
+5. User runs `plan:optimize <feature-id>` again to proceed
+
+> **Note:** Research tasks bypass workflow compliance checks (via `isResearchTask()`). The Feature does NOT need to be `in_progress` to work on research tasks.
+
 ## Step 3: Analyze Feature Plan
 
 Extract from the feature's detailed plan (in its description):
