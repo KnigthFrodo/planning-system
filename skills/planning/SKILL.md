@@ -80,6 +80,9 @@ Quality gates (all configurable via `.planconfig`):
 | View task | `bd show <task-id>` |
 | Claim work | `bd update <task-id> --status=in_progress` |
 | Complete work | `bd close <task-id>` |
+| Reflect on conversation | `/reflect` |
+| Toggle auto-reflect | `/reflect on` or `/reflect off` |
+| Reflect status | `/reflect status` |
 
 ## Workflow Files
 
