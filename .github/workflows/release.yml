@@ -158,31 +158,17 @@ jobs:
             PLUGIN_CONTENT=$(cat "$SOURCE_MARKETPLACE" | sed "s/{{VERSION}}/$VERSION/g")
 
             # Write complete README with fixed header and footer
-            cat > "$README_FILE" << 'HEADER_EOF'
-# Claude Code Plugin Marketplace
-
-A centralized marketplace for Bobby Johnson's Claude Code plugins.
-
-## Installation
-
-Add this marketplace to your Claude Code CLI:
-
-```bash
-/plugin marketplace add NotMyself/claude-dotnet-marketplace
-```
-
-## Available Plugins
-
-HEADER_EOF
+            printf '%s\n\n%s\n\n%s\n\n%s\n\n%s\n%s\n%s\n\n%s\n\n' \
+              '# Claude Code Plugin Marketplace' \
+              'A centralized marketplace for Bobby Johnson'"'"'s Claude Code plugins.' \
+              '## Installation' \
+              'Add this marketplace to your Claude Code CLI:' \
+              '```bash' \
+              '/plugin marketplace add NotMyself/claude-dotnet-marketplace' \
+              '```' \
+              '## Available Plugins' > "$README_FILE"
             echo "$PLUGIN_CONTENT" >> "$README_FILE"
-            cat >> "$README_FILE" << 'FOOTER_EOF'
-
----
-
-## License
-
-MIT
-FOOTER_EOF
+            printf '\n%s\n\n%s\n\n%s\n' '---' '## License' 'MIT' >> "$README_FILE"
 
             echo "Synced plan plugin content from MARKETPLACE.md"
             echo "=== Updated README preview ==="
