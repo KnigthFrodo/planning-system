@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ${CLAUDE_PROJECT_ROOT}/verification/verify-stop.ts"
+          },
+          {
+            "type": "command",
+            "command": "bun run ${CLAUDE_PROJECT_ROOT}/verification/reflect-hook.ts"
+          }
+        ]
+      }
+    ]
+  }
+}
