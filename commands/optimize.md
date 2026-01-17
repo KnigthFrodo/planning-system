@@ -1,11 +1,11 @@
 ---
 description: Decompose a plan into features and Beads tasks
-argument-hint: "<epic-id>"
+argument-hint: "<epic-id|feature-id>"
 ---
 
 # Optimize Plan
 
-Transform a plan epic into executable features with Beads tasks.
+Transform a plan (epic or feature) into executable work items with Beads.
 
 ## Before Starting
 
@@ -13,34 +13,49 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 
 ## Input
 
-- Epic ID: $ARGUMENTS (e.g., `my-feature-abc`)
-- Plan content: Retrieved from epic description
+- Item ID: $ARGUMENTS (e.g., `my-feature-abc`)
+- Plan content: Retrieved from item description
+
+## Modes
+
+This command is **type-aware** and behaves differently based on the input:
+
+### Epic Optimization
+When `$ARGUMENTS` is an **epic**:
+- Creates tasks directly under the epic
+- Generates supporting files in `dev/plans/<name>/`
+- Each task contains full executable prompt
+
+### Feature Optimization
+When `$ARGUMENTS` is a **feature**:
+- Creates tasks under the feature (not the parent epic)
+- Reuses supporting files from parent epic if available
+- Each task references the feature context
 
 ## Workflow
 
-1. **Load epic**: Fetch epic with `bd show <epic-id>`, read plan from description
+1. **Load item and detect type**: Fetch with `bd show <id>`, determine if epic or feature
 
-2. **Create plan directory**:
-   - Generate kebab-case name from epic title
-   - Create `dev/plans/<name>/`
+2. **Load workflow details**: Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/workflows/2-optimization.md`
 
-3. **Load workflow details**: Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/workflows/2-optimization.md`
+3. **Follow the type-appropriate workflow**:
+   - **If epic**: Create plan directory, supporting files, decompose into tasks
+   - **If feature**: Reuse or create supporting files, decompose into tasks under feature
 
-4. **Follow the workflow**:
-   - Analyze plan and decompose into features
-   - Create supporting files (context.md, constraints.md, etc.)
-   - Create Beads tasks with full prompts in description
-   - Set up feature dependencies
-   - Update epic with README content
+4. **Create Beads tasks with prompts**:
+   - Full executable prompt in each task description
+   - Dependencies between tasks via `bd dep add`
 
-5. **Verify output**: All files created, Beads tasks exist with prompts
+5. **Update item with execution guide**: Append README content to description
+
+6. **Verify output**: All files created, Beads tasks exist with prompts
 
 ## Constraints
 
-- One feature per Beads task
+- One objective per Beads task
 - Each task description contains full executable prompt
 - Include supporting files path at top of each prompt
-- Use `bd dep add` to establish feature dependencies
+- Use `bd dep add` to establish task dependencies
 
 ## Output
 
@@ -52,9 +67,9 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/planning/SKILL.md` for system overview.
 - `testing-strategy.md` - Testing approach
 
 **Beads:**
-- Tasks under epic with full prompts in descriptions
+- Tasks under epic or feature with full prompts in descriptions
 - Dependencies between tasks
-- Epic description updated with README content
+- Item description updated with execution guide
 
 ## Next
 

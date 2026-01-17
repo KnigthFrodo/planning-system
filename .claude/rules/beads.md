@@ -18,6 +18,36 @@ bd sync               # Sync with git
 - **Bug** can be assigned to any level (task, feature, or epic)
 - Work MUST be associated with an item type unless explicitly told otherwise
 
+### Planning Hierarchy Patterns
+
+**Standard Planning** (single feature/small initiative):
+```
+Epic (plan in description)
+  └── Task (prompt in description)
+  └── Task
+  └── ...
+```
+
+**Master Planning** (large initiative):
+```
+Epic (master plan in description)
+  └── Feature (brief description → detailed plan after plan:new <feature-id>)
+        └── Task (prompt in description, created by plan:optimize <feature-id>)
+        └── Task
+  └── Feature
+        └── Task
+        └── Task
+```
+
+**Research Pattern** (exploration before planning):
+```
+Feature (brief description)
+  └── Task "Research: <topic>" (exploration task)
+  └── Task "Research: <topic>"
+  # After research complete, run plan:new <feature-id> to add detailed plan
+  # Then plan:optimize <feature-id> to create implementation tasks
+```
+
 ## Status Propagation
 
 - When working on a task under a feature, mark the feature as `in_progress`

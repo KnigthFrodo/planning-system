@@ -11,13 +11,28 @@ This skill provides a reliable system for planning and executing features. It us
 
 ## Architecture
 
+### Standard Planning (single feature)
 ```
 plan:new ──► Beads Epic (plan in description)
                 │
                 ▼
-plan:optimize ──► Beads Tasks (prompts in descriptions)
-                │   + dev/plans/<name>/ (supporting files)
+plan:optimize <epic-id> ──► Beads Tasks (prompts in descriptions)
+                │              + dev/plans/<name>/ (supporting files)
                 ▼
+bd ready ──► Pull-based execution (one task at a time)
+```
+
+### Master Planning (large initiative)
+```
+plan:new --master ──► Beads Epic + Features (high-level decomposition)
+                          │
+                          ▼
+plan:new <feature-id> ──► Detailed plan in feature description
+                          │   (optional: research tasks first)
+                          ▼
+plan:optimize <feature-id> ──► Beads Tasks under feature
+                          │       + dev/plans/<name>/ (supporting files)
+                          ▼
 bd ready ──► Pull-based execution (one task at a time)
 ```
 
@@ -74,8 +89,11 @@ Quality gates (all configurable via `.planconfig`):
 
 | Task | Command |
 |------|---------|
-| Start new plan | `plan:new` |
-| Optimize plan | `plan:optimize <epic-id>` |
+| Start new plan (standard) | `plan:new` |
+| Start master plan | `plan:new --master` |
+| Plan a feature | `plan:new <feature-id>` |
+| Optimize epic into tasks | `plan:optimize <epic-id>` |
+| Optimize feature into tasks | `plan:optimize <feature-id>` |
 | Find work | `bd ready` |
 | View task | `bd show <task-id>` |
 | Claim work | `bd update <task-id> --status=in_progress` |

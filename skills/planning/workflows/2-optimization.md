@@ -2,11 +2,26 @@
 
 Detailed instructions for the `plan:optimize` command.
 
-## Step 1: Load Epic
+## Step 1: Load Item and Detect Type
 
-1. Fetch epic: `bd show <epic-id>`
-2. Read plan content from epic description
-3. Verify epic is open or in_progress
+1. Fetch the item: `bd show <id>`
+2. Detect the item type from the output (epic or feature)
+3. Read plan content from item description
+4. Verify item is open or in_progress
+
+**Type Detection:**
+- Look for `Type: epic` or `Type: feature` in the `bd show` output
+- Alternatively use: `bd show <id> --json` and parse the `type` field
+
+**Branch based on type:**
+- **If type is `epic`**: Continue with [Epic Optimization Workflow](#epic-optimization-workflow) below
+- **If type is `feature`**: Jump to [Feature Optimization Workflow](#feature-optimization-workflow)
+
+---
+
+# Epic Optimization Workflow
+
+Use this workflow when optimizing an **epic** into tasks. This is the standard workflow for standalone plans.
 
 ## Step 2: Create Plan Directory
 
@@ -207,4 +222,201 @@ bun run --cwd ${CLAUDE_PLUGIN_ROOT}/verification sync-devops.ts <epic-id> --crea
 
 ## Complete
 
-The plan is now optimized. User can begin execution with `bd ready`.
+The epic is now optimized. User can begin execution with `bd ready`.
+
+---
+
+# Feature Optimization Workflow
+
+Use this workflow when optimizing a **feature** into tasks. Features typically come from master planning and have their detailed plan in the description.
+
+## Step 2: Load Feature Context
+
+1. **Fetch parent epic** (if exists):
+   ```bash
+   bd show <parent-epic-id>
+   ```
+
+2. **Check for existing supporting files**:
+   - If parent epic was optimized, `dev/plans/<epic-name>/` may already exist
+   - Reuse existing supporting files when available
+
+3. **If no supporting files exist**, create them in `dev/plans/<feature-name>/`
+
+## Step 3: Analyze Feature Plan
+
+Extract from the feature's detailed plan (in its description):
+
+- Feature requirements
+- Implementation approach
+- Files to modify
+- Edge cases specific to this feature
+- Testing strategy
+
+## Step 4: Create/Update Supporting Files
+
+If supporting files don't exist from parent epic optimization:
+
+1. Generate kebab-case name from feature title
+2. Create directory: `dev/plans/<name>/`
+3. Generate supporting files as in Epic Optimization Step 4
+
+If supporting files exist from parent:
+- Append feature-specific edge cases to `edge-cases.md`
+- Append feature-specific decisions to `decisions.md`
+- Update other files as needed
+
+## Step 5: Decompose into Tasks
+
+Break the feature into discrete, testable tasks following progressive disclosure:
+
+**Layer 1 - Foundation**: Types, configuration, constants (no dependencies)
+**Layer 2 - Infrastructure**: Core utilities, helpers
+**Layer 3 - Core Logic**: Business logic, main functionality
+**Layer 4 - Integration**: Wiring, composition
+**Layer 5 - Validation**: Tests, E2E verification
+
+Each task should:
+
+- Have ONE clear objective
+- Be completable in a single session
+- Have concrete acceptance criteria
+- Have a verification command
+
+## Step 6: Create Beads Tasks with Prompts
+
+For each task, create under the **feature** (not epic):
+
+```bash
+bd create --type=task \
+  --parent=<feature-id> \
+  --title="T001: <task-title>" \
+  --description="<full-prompt-content>" \
+  --silent
+```
+
+### Prompt Content Template
+
+Same template as Epic Optimization Step 6, but reference the feature:
+
+```markdown
+# Task: T001 - <Title>
+
+**Feature:** <feature-name>
+**Supporting files:** `dev/plans/<name>/`
+
+## Context
+See `context.md` for project background and architecture.
+
+## Feature Context
+This task is part of feature: <feature-title>
+Feature objective: <feature objective from plan>
+
+## Prior Work
+Tasks completed before this one:
+- <T00X>: <What it established>
+
+## Objective
+<Single, clear statement of what this task accomplishes>
+
+> **Scope Constraint**: It is unacceptable to implement beyond this task's scope. Complete ONLY this task.
+
+## Relevant Decisions
+From `decisions.md`:
+- **D0X**: <Decision> — <Why it matters here>
+
+## Edge Cases
+From `edge-cases.md`:
+- **EC0X**: <Case> → <Required handling>
+
+## Files to Create/Modify
+| File | Purpose |
+|------|---------|
+| `path/to/file.ts` | What to create or change |
+
+## Implementation Details
+<Specific guidance, patterns to follow, interfaces to implement>
+
+## Acceptance Criteria
+- [ ] <Testable requirement 1>
+- [ ] <Testable requirement 2>
+- [ ] Edge case <EC0X> handled
+- [ ] Tests pass: `<test command>`
+
+## Verification
+```bash
+<verification-command>
+```
+Run this command. Only claim completion if it succeeds.
+
+## Commit
+```bash
+git add <files>
+git commit -m "feat(<scope>): <description>
+
+Implements: T001 (Feature: <feature-id>)"
+```
+```
+
+Store task IDs for dependency setup.
+
+## Step 7: Set Up Dependencies
+
+Use `bd dep add` to establish dependencies between tasks:
+
+```bash
+# T002 depends on T001 (T001 must complete before T002)
+bd dep add <task-id-T002> <task-id-T001>
+```
+
+This ensures `bd ready` only shows tasks with no blockers.
+
+## Step 8: Update Feature with README
+
+Update the feature description to append execution guide:
+
+```bash
+bd update <feature-id> --description="<original-detailed-plan>
+
+---
+
+## Execution Guide
+
+### Tasks
+| ID | Title | Depends On |
+|----|-------|------------|
+| T001 | ... | - |
+| T002 | ... | T001 |
+| T003 | ... | T001, T002 |
+
+### Workflow
+\`\`\`bash
+bd ready                                    # Find available work
+bd show <task-id>                           # Review task (prompt in description)
+bd update <task-id> --status=in_progress    # Claim work
+# ... do the work ...
+bd close <task-id>                          # Complete
+\`\`\`
+
+### Supporting Files
+Location: \`dev/plans/<name>/\`
+"
+```
+
+## Step 9: Validate Output
+
+Verify all created:
+
+- [ ] Supporting files exist (created or reused from parent)
+- [ ] Beads tasks created under feature
+- [ ] Each task has full prompt in description
+- [ ] Dependencies established with `bd dep add`
+- [ ] Feature description updated with execution guide
+
+## Step 10: DevOps Task Creation (Optional)
+
+Same as Epic Optimization Step 10.
+
+## Complete
+
+The feature is now optimized into tasks. User can begin execution with `bd ready`.
