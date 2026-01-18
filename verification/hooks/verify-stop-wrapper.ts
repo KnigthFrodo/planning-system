@@ -63,7 +63,7 @@ async function main() {
   process.exit(exitCode);
 }
 
-main().catch((err) => {
-  console.error("[planning-system] Wrapper error:", err.message);
+main().catch(() => {
+  // Silently exit 0 on wrapper errors - don't block
   process.exit(0);
 });

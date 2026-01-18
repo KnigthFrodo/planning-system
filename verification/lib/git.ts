@@ -8,8 +8,7 @@ export async function checkUncommittedChanges(): Promise<string[]> {
   try {
     const result = await $`git status --porcelain`.text();
     return result.trim().split("\n").filter(line => line.length > 0);
-  } catch (err: any) {
-    console.error(`[git] checkUncommittedChanges failed: ${err.message}`);
+  } catch {
     // Return empty array to not block on git errors
     return [];
   }

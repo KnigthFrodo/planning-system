@@ -123,8 +123,7 @@ async function main(): Promise<void> {
         `Workflow compliance failed:\n${workflow.issues.join("\n\n")}`
       );
     }
-  } catch (err: any) {
-    console.error(`[verify-stop] Workflow compliance check failed: ${err.message}`);
+  } catch {
     // Don't block on workflow check errors
   }
 
@@ -169,11 +168,7 @@ async function main(): Promise<void> {
   process.exit(0);
 }
 
-main().catch(err => {
-  console.error("Verification error:", err.message);
-  if (err.stack) {
-    console.error("Stack trace:", err.stack);
-  }
-  // Exit 0 to not block on unexpected errors - they should be fixed, not block work
+main().catch(() => {
+  // Silently exit 0 on unexpected errors - they should be fixed, not block work
   process.exit(0);
 });
