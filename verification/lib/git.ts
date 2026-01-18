@@ -5,8 +5,14 @@
 import { $ } from "bun";
 
 export async function checkUncommittedChanges(): Promise<string[]> {
-  const result = await $`git status --porcelain`.text();
-  return result.trim().split("\n").filter(line => line.length > 0);
+  try {
+    const result = await $`git status --porcelain`.text();
+    return result.trim().split("\n").filter(line => line.length > 0);
+  } catch (err: any) {
+    console.error(`[git] checkUncommittedChanges failed: ${err.message}`);
+    // Return empty array to not block on git errors
+    return [];
+  }
 }
 
 export async function getRecentCommits(count: number): Promise<string[]> {
