@@ -6,11 +6,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run ${CLAUDE_PROJECT_DIR}/verification/verify-stop.ts"
+            "command": "bun run ${CLAUDE_PROJECT_DIR}/verification/hooks/verify-stop-wrapper.ts"
           },
           {
             "type": "command",
-            "command": "bun run ${CLAUDE_PROJECT_DIR}/verification/reflect-hook.ts"
+            "command": "bun run ${CLAUDE_PROJECT_DIR}/verification/hooks/reflect-hook-wrapper.ts"
           }
         ]
       }
