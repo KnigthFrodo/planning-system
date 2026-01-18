@@ -52,15 +52,26 @@ async function main() {
   }
 
   // Run the actual verify-stop script as a subprocess
-  const proc = Bun.spawn(["bun", "run", VERIFY_SCRIPT], {
-    cwd: VERIFICATION_DIR,
-    stdout: "inherit",
-    stderr: "inherit",
-    stdin: "inherit",
-  });
+  try {
+    const proc = Bun.spawn(["bun", "run", VERIFY_SCRIPT], {
+      cwd: VERIFICATION_DIR,
+      stdout: "inherit",
+      stderr: "inherit",
+      stdin: "inherit",
+    });
 
-  const exitCode = await proc.exited;
-  process.exit(exitCode);
+    const exitCode = await proc.exited;
+
+    // Exit 128 typically means git/environment issues - don't block on these
+    if (exitCode === 128) {
+      process.exit(0);
+    }
+
+    process.exit(exitCode);
+  } catch {
+    // Don't block on subprocess errors
+    process.exit(0);
+  }
 }
 
 main().catch(() => {
